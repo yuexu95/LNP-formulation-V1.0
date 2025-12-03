@@ -7,9 +7,7 @@ Here we just have the home page, with a short description of the tabs, and some 
 """
 
 
-import matplotlib.pyplot as plt
 import streamlit as st
-import matplotlib.image as mpimg
 
 st.set_page_config(
     page_title="Home page",
