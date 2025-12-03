@@ -1,0 +1,2 @@
+This platform is hosted with streamlit, and you use this platform to caculate your LNP formulation.
+The project is under construction, feel free to make comments, remarks, or help us adding new missions or features!
