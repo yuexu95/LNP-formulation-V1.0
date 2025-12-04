@@ -41,7 +41,7 @@ with st.expander("Show detailed calculation formulas"):
     st.latex(r"V_{\text{EtOH, lipids}} = \sum_i V_i \approx 8.6085+15.3241+18.0460+1.8249 \approx 16.2\,\mu L")
 
     st.latex(r"\textbf{DNA mixing volume:}\quad V_{\text{DNA}} = 180\,\mu L\ \text{(25 mM sodium acetate)}")
-    st.latex(r"\textbf{Molecular weights (example):}\ \ MW_{\text{SM102}}\approx 1000\,\mu g/\mu mol,\ MW_{\text{DSPC}}=744.034,\ MW_{\text{Chol}}=386.654,\ MW_{\text{PEG}}=2509.2")
+    st.latex(r"\textbf{Molecular weights (example):}\ \ MW_{\text{SM102}}\710.182 \,\mu g/\mu mol,\ MW_{\text{DSPC}}=744.034,\ MW_{\text{Chol}}=386.654,\ MW_{\text{PEG}}=2509.2")
 
     st.latex(r"\textbf{Moles from masses (per table):}\quad n_{i}\,(\mu mol) = \frac{m_{i}\,(\mu g)}{MW_{i}\,(\mu g/\mu mol)}")
     st.latex(r"n_{\text{SM102}} = \frac{860.8484848}{1000} \approx 0.86085\,\mu mol\,,\ \ n_{\text{DSPC}} = \frac{191.5515152}{744.034} \approx 0.25757\,\mu mol")
