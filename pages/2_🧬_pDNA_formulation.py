@@ -22,10 +22,6 @@ with st.expander("Show example for 100 µg DNA at N/P = 4; EtOH phase ratios"):
 
     st.warning("Dilute 100 µg DNA to 180 µL in 25 mM sodium acetate.")
 
-# 用公式展示计算过程（可折叠）
-import streamlit as st
-
-# ... existing code ...
 
 with st.expander("Show detailed calculation formulas (Recalculated)"):
     # 1. Define the Formulation Parameters
