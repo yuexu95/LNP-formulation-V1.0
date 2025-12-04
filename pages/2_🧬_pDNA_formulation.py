@@ -23,32 +23,51 @@ with st.expander("Show example for 100 µg DNA at N/P = 4; EtOH phase ratios"):
     st.warning("Dilute 100 µg DNA to 180 µL in 25 mM sodium acetate.")
 
 # 用公式展示计算过程（可折叠）
-with st.expander("Show detailed calculation formulas"):
-    st.latex(r"\textbf{Moderna LNP Formulation for mRNA delivery(EtOH phase mol\%):}\quad f_{\text{SM102}}=0.50,\ f_{\text{DSPC}}=0.10,\ f_{\text{Chol}}=0.385,\ f_{\text{PEG}}=0.015")
+import streamlit as st
 
-    st.latex(r"\textbf{DNA and N/P:}\quad m_{\text{DNA}}=100\,\mu g,\ \text{N/P}=4,\ a=1")
-    st.latex(r"P\,(\mu mol) = \frac{100}{330} \approx 0.30303\,\mu mol\,,\quad N = 4\times 0.30303 \approx 1.21212\,\mu mol")
+# ... existing code ...
 
-    st.latex(r"\textbf{Mole split by fraction:}\quad n_{i} = f_{i}\,n_{\text{total}}\,,\ \sum_i f_i=1")
-    st.latex(r"\text{Assume } n_{\text{total}} \text{ consistent with table masses.}")
+with st.expander("Show detailed calculation formulas (Recalculated)"):
+    # 1. Define the Formulation Parameters
+    st.markdown("### 1. Target Formulation & Parameters")
+    st.latex(r"\textbf{Moderna LNP (Mol \%):}\quad f_{\text{SM102}}=50\%,\ f_{\text{DSPC}}=10\%,\ f_{\text{Chol}}=38.5\%,\ f_{\text{PEG}}=1.5\%")
+    st.latex(r"\textbf{Payload:}\quad m_{\text{DNA}}=100\,\mu g,\ \text{N/P Ratio}=4")
+    st.latex(r"\textbf{Molecular Weights (g/mol):}\ SM102=710.2,\ DSPC=744.0,\ Chol=386.7,\ PEG=2509.2")
 
-    st.latex(r"\textbf{Mass from moles:}\quad m_{i}\,(\mu g) = n_{i}\,(\mu mol) \cdot MW_{i}\,(\mu g/\mu mol)")
-    st.latex(r"\text{Table masses (per 100 }\mu g\text{ DNA at N/P=4): }\ m_{\text{SM102}}=860.8484848,\ m_{\text{DSPC}}=191.5515152,\ m_{\text{Chol}}=360.92,\ m_{\text{PEG}}=91.24363636\ (\mu g)")
+    # 2. Calculate Moles of Payload (P) and Ionizable Lipid (N)
+    st.markdown("### 2. Moles of N (Amine) from DNA")
+    st.latex(r"n_{P} = \frac{m_{\text{DNA}}}{MW_{\text{avg nt}}} = \frac{100}{330} \approx 0.303\,\mu mol")
+    st.latex(r"n_{\text{SM102}} = n_{N} = n_{P} \times (N/P) = 0.303 \times 4 \approx \mathbf{1.212\,\mu mol}")
 
-    st.latex(r"\textbf{Volume from stock:}\quad V_{i}\,(\mu L) = \frac{m_{i}\,(\mu g)}{C_{i}\,(\mu g/\mu L)}")
-    st.latex(r"V_{\text{SM102}} = \frac{860.8484848}{100} \approx 8.6085\,\mu L\,,\ \ V_{\text{DSPC}} = \frac{191.5515152}{12.5} \approx 15.3241\,\mu L")
-    st.latex(r"V_{\text{Chol}} = \frac{360.92}{20} \approx 18.0460\,\mu L\,,\ \ V_{\text{PEG}} = \frac{91.24363636}{50} \approx 1.8249\,\mu L")
-    st.latex(r"V_{\text{EtOH, lipids}} = \sum_i V_i \approx 8.6085+15.3241+18.0460+1.8249 \approx 16.2\,\mu L")
+    # 3. Calculate Total Lipids and Individual Components
+    st.markdown("### 3. Lipid Stoichiometry")
+    st.caption("Since SM-102 constitutes 50% of the total lipid mixture:")
+    st.latex(r"n_{\text{total}} = \frac{n_{\text{SM102}}}{0.50} = \frac{1.212}{0.5} = 2.424\,\mu mol")
+    
+    st.latex(r"\textbf{Individual Moles } (n_i = f_i \times n_{\text{total}}):")
+    st.latex(r"n_{\text{DSPC}} = 0.10 \times 2.424 \approx 0.242\,\mu mol")
+    st.latex(r"n_{\text{Chol}} = 0.385 \times 2.424 \approx 0.933\,\mu mol")
+    st.latex(r"n_{\text{PEG}} = 0.015 \times 2.424 \approx 0.036\,\mu mol")
 
-    st.latex(r"\textbf{DNA mixing volume:}\quad V_{\text{DNA}} = 180\,\mu L\ \text{(25 mM sodium acetate)}")
-    st.latex(r"\textbf{Molecular weights (example):}\ \ MW_{\text{SM102}}\710.182 \,\mu g/\mu mol,\ MW_{\text{DSPC}}=744.034,\ MW_{\text{Chol}}=386.654,\ MW_{\text{PEG}}=2509.2")
+    # 4. Convert Moles to Mass
+    st.markdown("### 4. Required Mass")
+    st.latex(r"\textbf{Mass } (m_i = n_i \times MW_i):")
+    st.latex(r"m_{\text{SM102}} = 1.212 \times 710.18 \approx \mathbf{860.85\,\mu g}")
+    st.latex(r"m_{\text{DSPC}} = 0.242 \times 744.03 \approx \mathbf{180.35\,\mu g}")
+    st.latex(r"m_{\text{Chol}} = 0.933 \times 386.65 \approx \mathbf{360.84\,\mu g}")
+    st.latex(r"m_{\text{PEG}} = 0.036 \times 2509.2 \approx \mathbf{91.23\,\mu g}")
 
-    st.latex(r"\textbf{Moles from masses (per table):}\quad n_{i}\,(\mu mol) = \frac{m_{i}\,(\mu g)}{MW_{i}\,(\mu g/\mu mol)}")
-    st.latex(r"n_{\text{SM102}} = \frac{860.8484848}{710.182} \approx 0.86085\,\mu mol\,,\ \ n_{\text{DSPC}} = \frac{191.5515152}{744.034} \approx 0.25757\,\mu mol")
-    st.latex(r"n_{\text{Chol}} = \frac{360.92}{386.654} \approx 0.93345\,\mu mol\,,\ \ n_{\text{PEG}} = \frac{91.24363636}{2509.2} \approx 0.03636\,\mu mol")
-    st.latex(r"n_{\text{total}} \approx 0.86085+0.25757+0.93345+0.03636 \approx 2.08823\,\mu mol")
-    st.latex(r"\textbf{Check mol fractions:}\quad f_{i} = \frac{n_{i}}{n_{\text{total}}}\ \Rightarrow\ f_{\text{SM102}}\approx 0.412,\ f_{\text{DSPC}}\approx 0.123,\ f_{\text{Chol}}\approx 0.447,\ f_{\text{PEG}}\approx 0.017")
-    st.latex(r"\text{Note: Actual table masses yield fractions close to provided EtOH mol\% after accounting for formulation specifics.}")
+    # 5. Convert Mass to Volume
+    st.markdown("### 5. Pipetting Volumes (from Stock)")
+    st.latex(r"\textbf{Volume } (V_i = m_i / C_i):")
+    st.latex(r"V_{\text{SM102}} (100 \mu g/\mu L) = \frac{860.85}{100} = \mathbf{8.61\,\mu L}")
+    st.latex(r"V_{\text{DSPC}} (12.5 \mu g/\mu L) = \frac{180.35}{12.5} = \mathbf{14.43\,\mu L}")
+    st.latex(r"V_{\text{Chol}} (20 \mu g/\mu L) = \frac{360.84}{20} = \mathbf{18.04\,\mu L}")
+    st.latex(r"V_{\text{PEG}} (50 \mu g/\mu L) = \frac{91.23}{50} = \mathbf{1.82\,\mu L}")
+
+    st.markdown("---")
+    st.latex(r"\textbf{Total Lipid Volume:} \sum V_i \approx 42.9\,\mu L")
+    st.latex(r"\textbf{Verification:} \frac{n_{\text{SM102}}}{n_{\text{total}}} = \frac{1.212}{2.424} = 50.0\% \quad \checkmark")
 import streamlit as st
 import pandas as pd
 # Set the layout to wide
