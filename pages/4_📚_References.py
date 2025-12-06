@@ -11,17 +11,48 @@ nucleic acid delivery, and therapeutic applications.
 """)
 
 st.divider()
+# Featured Papers
+st.header("Featured Papers")
+st.info("""
+✨ **Featured Research**
+
+1. **Safe and effective in vivo delivery of DNA and RNA using proteolipid vehicles.**  
+    Brown, D.W., Wee, P., Bhandari, P., et al. *Cell* (2024) 187(19):5357-5375.  
+    [DOI: 10.1016/j.cell.2024.07.023](https://doi.org/10.1016/j.cell.2024.07.023)  
+    This study presents a novel proteolipid vehicle for the safe and efficient delivery of nucleic acids, demonstrating significant advancements in gene therapy applications.
+
+2. **Safer non-viral DNA delivery using lipid nanoparticles loaded with endogenous anti-inflammatory lipids.**  
+    Patel MN, Tiwari S, Wang Y, O'Neill S, Wu J, Omo-Lamai S, Espy C, Chase LS, Majumder A, Hoffman E, Shah A, Sárközy A, Katzen J, Pardi N, and Brenner JS. *Nature Biotechnology* (2025).  
+    [DOI: 10.1038/s41587-025-02556-5](https://doi.org/10.1038/s41587-025-02556-5)  
+    This groundbreaking study demonstrates a novel approach to enhancing the safety profile of lipid nanoparticle-mediated DNA delivery through the incorporation of endogenous anti-inflammatory lipids, addressing a critical challenge in non-viral gene therapy.
+""")
 
 # 2025 References
 st.header("2025")
 st.markdown("""
-1. Awlqadr FH, Noreen S, Altemimi AB, Mohammed OA, Qadir SA, Ahmed DH, Alkanan ZT, Tsakali E, Van Impe JFM, Kozak D, Abd El-Maksoud AA, Ashraf MA and Abedelmaksoud TG. Advancement in nanobubble technology: enhancing drug and nutraceutical delivery with focus on bioavailability, targeted therapy, safety, and sustainability. *Front. Nanotechnol.* (2025) 7:1548593. [DOI: 10.3389/fnano.2025.1548593](https://doi.org/10.3389/fnano.2025.1548593)
+1. Rohilla P, Azizoglu E, Park S, Lele A, Prausnitz MR, and Bhamla S. Low-cost, handheld, multi-pulse electroporators for simplified nucleic acid delivery in skin. *Bioeng Transl Med* (2025) e70070. [DOI: 10.1002/btm2.70070](https://doi.org/10.1002/btm2.70070)
 
-2. Argenziano M, Spagnolo R, and Cavalli R. What are the future applications of chitosan nanobubbles in drug delivery? *Expert Opinion on Drug Delivery* (2025) 22(3):307–309. [DOI: 10.1080/17425247.2025.2462761](https://doi.org/10.1080/17425247.2025.2462761)
+2. Rigden DJ and Fernández XM. The 2025 Nucleic Acids Research database issue and the online molecular biology database collection. *Nucleic Acids Res* (2025) 53(D1):D1–D9. [DOI: 10.1093/nar/gkae1220](https://doi.org/10.1093/nar/gkae1220)
 
-3. Enhancing nucleic acid delivery by the integration of artificial intelligence into lipid nanoparticle formulation. *Frontiers in Medical Technology* (2025). [Link](https://www.frontiersin.org/journals/medical-technology/articles/10.3389/fmedt.2025.1591119/full)
+3. Li H, Liu J, Wang H, Xu C, Shi G, Zhao J, Zhang L, Zeng M, and Jiang L. Biomimetic exosome harnessing exosomal lipidomics and functional proteins for PEDF-pDNA delivery in high altitude pulmonary edema intervention. *J Control Release* (2025) 379:652–677. [DOI: 10.1016/j.jconrel.2025.01.033](https://doi.org/10.1016/j.jconrel.2025.01.033)
 
-4. Safer non-viral DNA delivery using lipid nanoparticles loaded with plasmid DNA. *PMC* (2025). [Link](https://pmc.ncbi.nlm.nih.gov/articles/PMC12235526/)
+4. Shariati A, Khezrpour A, Shariati F, Afkhami H, Yarahmadi A, Alavimanesh S, Kamrani S, Modarressi MH, and Khani P. DNA vaccines as promising immuno-therapeutics against cancer: a new insight. *Front Immunol* (2025) 15:1498431. [DOI: 10.3389/fimmu.2024.1498431](https://doi.org/10.3389/fimmu.2024.1498431)
+
+5. Jeon J, Byun H, Lee M, Kim J, Park S, Madrigal-Salazar A, González M, Lopez-Pacheco M, Liu W, Nasr M, Lee S-H, Lee Y-S, Lee L, Kim W-J, Kim D, and Shin S. Exosome-Mediated DNA Delivery for Lung Cancer Therapy. *ACS Applied Materials & Interfaces* (2025) 1944-8252. [DOI: 10.1021/acsami.5c15987](https://doi.org/10.1021/acsami.5c15987)
+
+6. Panda P, Gouda SR, Boxi D, Saha G, and Mohapatra R. Macromolecular Gene Delivery Systems: Advancing Non-viral Therapeutics with Synthetic and Natural Polymers. *J Explor Res Pharmacol* (2025) 10(2):62–75. [DOI: 10.14218/JERP.2025.00009](http://dx.doi.org/10.14218/JERP.2025.00009)
+
+7. Konopka EN, Edgerton AO, and Kutzler MA. Nucleic acid vaccines: innovations, efficacy, and applications in at-risk populations. *Front Immunol* (2025) 16:1584876. [DOI: 10.3389/fimmu.2025.1584876](https://doi.org/10.3389/fimmu.2025.1584876)
+
+8. Anderluzzi G, Mohamed T, Moschetti G, Del Favero E, Rizzello L, Magnaghi V, Franzé S, and Cilurzo F. The Impact of Using Different Cationic Polymers on the Formation of Efficient Lipopolyplexes for pDNA Delivery. *Int J Nanomedicine* (2025) 20:10021–10041. [DOI: 10.2147/IJN.S513568](https://doi.org/10.2147/IJN.S513568)
+
+9. Awlqadr FH, Noreen S, Altemimi AB, Mohammed OA, Qadir SA, Ahmed DH, Alkanan ZT, Tsakali E, Van Impe JFM, Kozak D, Abd El-Maksoud AA, Ashraf MA and Abedelmaksoud TG. Advancement in nanobubble technology: enhancing drug and nutraceutical delivery with focus on bioavailability, targeted therapy, safety, and sustainability. *Front. Nanotechnol.* (2025) 7:1548593. [DOI: 10.3389/fnano.2025.1548593](https://doi.org/10.3389/fnano.2025.1548593)
+
+10. Argenziano M, Spagnolo R, and Cavalli R. What are the future applications of chitosan nanobubbles in drug delivery? *Expert Opinion on Drug Delivery* (2025) 22(3):307–309. [DOI: 10.1080/17425247.2025.2462761](https://doi.org/10.1080/17425247.2025.2462761)
+
+11. Enhancing nucleic acid delivery by the integration of artificial intelligence into lipid nanoparticle formulation. *Frontiers in Medical Technology* (2025). [Link](https://www.frontiersin.org/journals/medical-technology/articles/10.3389/fmedt.2025.1591119/full)
+
+12. Safer non-viral DNA delivery using lipid nanoparticles loaded with plasmid DNA. *PMC* (2025). [Link](https://pmc.ncbi.nlm.nih.gov/articles/PMC12235526/)
 """)
 
 st.divider()
@@ -65,6 +96,9 @@ st.divider()
 # 2023 References
 st.header("2023")
 st.markdown("""
+
+Brown, D.W., Wee, P., Bhandari, P., Bukhari, A., Grin, L., Vega, H., Hejazi, M., Sosnowski, D., Ablack, J., Clancy, E.K. and Pink, D., 2024. Safe and effective in vivo delivery of DNA and RNA using proteolipid vehicles. Cell, 187(19), pp.5357-5375. DOI: 10.1016/j.cell.2024.07.023 
+            
 1. Bai M, Liu Z, Zhan L, Yuan M, and Yu H. Effect of pore size distribution and colloidal fines of porous media on the transport behavior of micro-nano-bubbles. *Colloids Surfaces A Physicochem. Eng. Aspects* (2023) 660:130851. [DOI: 10.1016/j.colsurfa.2022.130851](https://doi.org/10.1016/j.colsurfa.2022.130851)
 
 2. Chakraborty C, Sharma AR, Bhattacharya M, Lee S-S. From COVID-19 to Cancer mRNA Vaccines: Moving From Bench to Clinic in the Vaccine Landscape. *Front. Immunol.* (2023) 12:679344. [DOI: 10.3389/fimmu.2021.679344](https://doi.org/10.3389/fimmu.2021.679344)
