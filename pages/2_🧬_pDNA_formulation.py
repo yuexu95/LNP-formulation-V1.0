@@ -255,13 +255,15 @@ def main():
         # Save to history
         record = {
             "Formulation Name": formulation_name if formulation_name else "Unnamed",
-            "DNA Scale (μg)": dna_scale,
-            "DNA Stock (μg/μL)": dna_stock_concentration,
-            "IL:DNA Ratio": ionizable_lipid_to_dna_ratio,
-            "Aq:EtOH Ratio": aqueous_to_ethanol_ratio,
+            "Ionizable Lipid (μL)": f"{volumes['Ionizable Lipid']:.2f}",
+            "Helper Lipid (μL)": f"{volumes['helper_lipid_volume']:.2f}",
+            "Cholesterol (μL)": f"{volumes['cholesterol_volume']:.2f}",
+            "PEG-DMG2000 (μL)": f"{volumes['pegdmg2000_volume']:.2f}",
+            "Ethanol (μL)": f"{volumes['ethanol']:.2f}",
+            "DNA (μL)": f"{volumes['dna_volume']:.2f}",
+            "Citrate (μL)": f"{volumes['citrate_volume']:.2f}",
+            "Water (μL)": f"{volumes['water_volume']:.2f}",
             "N/P Ratio": f"{np_ratio:.3f}",
-            "N (μmol)": f"{n_moles:.4f}",
-            "P (μmol)": f"{p_moles:.4f}",
         }
         st.session_state.history_records.append(record)
         st.success(f"✅ Formulation '{record['Formulation Name']}' saved!")
