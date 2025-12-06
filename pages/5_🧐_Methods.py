@@ -3,44 +3,289 @@ import pandas as pd
 
 st.set_page_config(page_title="Methods", page_icon="🔬", layout="wide")
 
-st.title("🔬 Methods for pDNA-LNP Formulation")
-
-# --- 左侧：标准操作流程 (SOP) ---
-st.header("📝 Standard Operating Procedure (SOP)")
+st.title("🔬 Standard Operating Protocol: Preparation and Characterization of pDNA-LNPs")
 
 st.markdown("""
-### Step 1: Prepare the Stock Solutions of Lipids 🧪
-* **Ionizable lipid:** Weigh the mass (mg) and dissolve in Ethanol to reach target concentration (e.g., 10 mg/mL).
-* **Cholesterol:** Weigh and dissolve in Ethanol (e.g., 10 mg/mL).
-* **Helper Lipid (DSPC/DOPE):** Weigh and dissolve in Ethanol (e.g., 5 or 10 mg/mL). *Note: DSPC may require heating to 40-50°C to dissolve.*
-* **PEG-lipid:** Weigh and dissolve in Ethanol (e.g., 5 or 10 mg/mL).
-
-### Step 2: Prepare the Aqueous Phase (Phase A) 💧
-* Dilute the **pDNA** in Citrate Buffer (10 mM, pH 4.0) to the target concentration.
-* *Calculation Tip:* Ensure the final volume of the aqueous phase matches your planned Flow Rate Ratio (usually 3:1 Aqueous:Ethanol).
-
-### Step 3: Prepare the Organic Phase (Phase B) 🥃
-* Combine the four lipid stock solutions into a single tube based on the calculated molar ratios.
-* Add pure Ethanol to reach the final target volume for the organic phase.
-* **Critical:** Ensure the lipid mix is clear and homogenous before mixing.
-
-### Step 4: Microfluidic Mixing / Formulation ⚡
-* **Setup:** Load Phase A (pDNA) and Phase B (Lipids) into the microfluidic device (e.g., NanoAssemblr or custom T-junction).
-* **Parameters:** Set the **Flow Rate Ratio (FRR)** (typically 3:1 Aqueous:Organic) and **Total Flow Rate (TFR)** (e.g., 12 mL/min).
-* **Collection:** Discard the first and last few drops (waste) to ensure steady-state mixing, then collect the LNP solution.
-
-### Step 5: Downstream Processing (Buffer Exchange) 🔄
-* **Dialysis:** Transfer the LNP solution into a dialysis cassette (e.g., 20k-100k MWCO).
-* **Buffer:** Dialyze against 1x PBS (pH 7.4) for at least 6-12 hours (change buffer once) to remove ethanol and neutralize pH.
-* *Alternative:* Use Tangential Flow Filtration (TFF) for larger scales.
-
-### Step 6: Filtration & QC 🔍
-* **Sterilization:** Filter the final LNP through a 0.22 μm PES syringe filter.
-* **Characterization:**
-    * **Size & PDI:** Dynamic Light Scattering (DLS).
-    * **Encapsulation Efficiency (EE%):** RiboGreen assay (with and without Triton X-100).
-    * **pDNA Integrity:** Gel electrophoresis.
+Plasmid DNA-Lipid Nanoparticles (pDNA-LNPs) represent a significant advancement in non-viral gene delivery. 
+Unlike viral vectors, LNPs offer a synthetic and highly customizable platform with reduced immunogenicity 
+and streamlined manufacturing. This protocol provides comprehensive guidance for formulation, surface 
+functionalization, and characterization of pDNA-LNPs.
 """)
+
+st.divider()
+
+# Section 1: Foundational Principles
+st.header("1. Foundational Principles of pDNA-LNP Design")
+
+st.markdown("""
+A stable and effective formulation requires careful engineering of each component to overcome biological 
+barriers and safety concerns.
+""")
+
+with st.expander("1.1 Core Components and Their Functions"):
+    st.markdown("""
+    | Component | Examples | Function | Key Properties |
+    |-----------|----------|----------|----------------|
+    | **Plasmid DNA (pDNA)** | MAGE-A3, MUC1, EGFP, tdTomato | Genetic cargo encoding therapeutic proteins, antigens, or reporters | Circular, double-stranded DNA |
+    | **Cationic/Ionizable Lipids** | D-Lin-MC3-DMA, SM-102, ALC-0315, 5A2-SC8, HGT5000 | pDNA encapsulation via electrostatic interaction | Tertiary amine, pKa 6.0-7.0 |
+    | **Helper Lipids** | DOPE, DSPC | Lipid bilayer stabilization, membrane fusion, endosomal escape | Phospholipids |
+    | **Structural Lipids** | Cholesterol | Membrane fluidity, rigidity, and integrity | Modulates stability during circulation |
+    | **PEGylated Lipids** | DMG-PEG2K | "Stealth" coating, reduces opsonization | Increases circulation time |
+    """)
+
+with st.expander("1.2 Key Design Challenges"):
+    st.markdown("""
+    **Challenge 1: Innate Immune Recognition**
+    - pDNA-LNPs can induce acute inflammation via cGAS-STING pathway activation
+    - Triggers massive cytokine release (IFN-β, IL-6) leading to systemic toxicity
+    - **Solution**: Incorporate nitro-oleic acid (NOA) at 0.2–0.8 mole ratio to inhibit STING
+    
+    **Challenge 2: Nuclear Delivery Barrier**
+    - pDNA must reach the nucleus for transcription (unlike mRNA which only needs cytoplasm)
+    - Nuclear entry is a primary limitation for efficiency
+    - **Solution**: Optimize formulation and use physical enhancement methods
+    """)
+
+st.divider()
+
+# Section 2: Materials
+st.header("2. Required Materials and Reagents")
+
+st.markdown("""
+High-quality, GMP-grade materials are essential for reproducible and safe formulations.
+""")
+
+col1, col2 = st.columns(2)
+
+with col1:
+    st.subheader("2.1 Lipid Components")
+    lipid_data = {
+        "Lipid Category": ["Cationic/Ionizable", "Helper (Phospholipid)", "Structural", "PEGylated"],
+        "Examples": ["C12-200, DODAP, HGT5000, 5A2-SC8", "DOPE, DSPC", "Cholesterol", "DMG-PEG2K"],
+        "Molar Ratio (%)": ["5-50", "10-50", "15-60", "0.25-12.5"]
+    }
+    st.table(pd.DataFrame(lipid_data))
+
+with col2:
+    st.subheader("2.2 Solvents and Buffers")
+    st.markdown("""
+    - **Ethanol**: ACS grade or higher, Absolute (200 proof)
+    - **Citrate Buffer**: 10 mM, pH 4.0-4.5 (for pDNA dissolution)
+    - **PBS**: 1x, pH 7.4 (for dialysis and neutralization)
+    - **Water**: Nuclease-free, HPLC grade
+    
+    ⚠️ **Critical**: pH 4.0 ensures ionizable lipids are protonated (+) for pDNA binding.  
+    pH 7.4 deprotonates lipids to neutral state, reducing toxicity.
+    """)
+
+st.divider()
+
+# Section 3: Formulation Protocol
+st.header("3. Step-by-Step LNP Formulation Protocol")
+
+st.markdown("""
+Formation of pDNA-LNPs is a controlled self-assembly process driven by rapid mixing of lipid-ethanol 
+and pDNA-aqueous phases.
+""")
+
+st.subheader("Step 1: Preparation of the Lipid Phase (Organic Phase)")
+st.markdown("""
+1. Weigh individual lipid components (ionizable lipid, helper lipid, cholesterol, PEG-lipid)
+2. Dissolve completely in **absolute ethanol**
+3. Combine according to predetermined molar ratios (e.g., 40:20:35:5 for HGT5000:DOPE:cholesterol:DMG-PEG2K)
+4. Ensure complete dissolution and homogeneity
+""")
+
+st.subheader("Step 2: Preparation of the Aqueous Phase")
+st.markdown("""
+1. Dissolve high-purity plasmid DNA in **Citrate Buffer (10 mM, pH 4.0-4.5)**
+2. Gently mix until fully dissolved (target concentration: e.g., 1 mg/mL)
+3. ⚠️ **Avoid vigorous vortexing** - can fragment large plasmid DNA molecules
+""")
+
+st.subheader("Step 3: Nanoparticle Assembly via Rapid Mixing")
+
+tab1, tab2 = st.tabs(["Method A: Manual Rapid Injection", "Method B: Microfluidic Mixing"])
+
+with tab1:
+    st.markdown("""
+    **Procedure:**
+    1. Draw lipid-ethanol solution into syringe
+    2. **Rapidly inject** into stirring aqueous pDNA solution
+    3. Immediately shake or pipette vigorously for homogenous formation
+    4. Incubate for **10 minutes** at room temperature for stabilization
+    
+    **Advantages:** Simple, low equipment cost  
+    **Disadvantages:** Less control, higher batch-to-batch variability
+    """)
+
+with tab2:
+    st.markdown("""
+    **Procedure:**
+    1. Load phases into separate syringes on syringe pumps
+    2. Set **Flow Rate Ratio (FRR)**: typically 3:1 (aqueous:ethanol)
+    3. Set **Total Flow Rate (TFR)**: e.g., 12 mL/min
+    4. Infuse through microfluidic chip for controlled mixing
+    5. Discard first/last drops, collect main product
+    
+    **Advantages:** Superior control, narrow size distribution, high reproducibility  
+    **Disadvantages:** Requires specialized equipment  
+    **Recommended for:** Therapeutic development and regulatory applications
+    """)
+
+st.subheader("Step 4: Downstream Processing and Purification")
+st.markdown("""
+1. **Dialysis**: Transfer to dialysis cassette (20-100 kDa MWCO)
+   - Dialyze against **1x PBS (pH 7.4)** for ≥2 hours
+   - Change buffer 1-2 times
+   - Purpose: Remove ethanol + neutralize pH
+   
+2. **Sterilization**: Filter through **0.22 µm sterile filter**
+   - Mandatory for in vitro/in vivo applications
+   
+3. **Concentration** (if needed): Use centrifugal filtration
+   - Reach desired target concentration for dosing
+""")
+
+st.divider()
+
+# Section 4: Surface Modification
+st.header("4. Post-Formulation Surface Modification for Targeted Delivery")
+
+st.markdown("""
+Surface modification with targeting ligands enhances therapeutic potential by improving tissue specificity 
+and reducing off-target effects.
+""")
+
+st.subheader("4.1 Ligand Preparation and Conjugation")
+st.markdown("""
+**Example: Dual-Targeted LNP for HER2+ Breast Cancer**
+
+1. Prepare LNPs with folate-conjugated PEGylated lipids
+2. Modify Herceptin (trastuzumab) antibody to introduce thiol groups (thiolation)
+3. Conjugate thiolated antibody to maleimide groups on PEG-lipid surface
+4. Result: Dual targeting via folate receptor and HER2 receptor
+""")
+
+st.subheader("4.2 Linkage Strategies")
+linkage_data = {
+    "Linkage Strategy": [
+        "Avidin-Biotin Bridging",
+        "Electrostatic Bonds",
+        "Covalent - Disulfide Bonds",
+        "Covalent - Maleimide-Thiol",
+        "Covalent - DBCO-Azide (SPAAC)"
+    ],
+    "Key Characteristics": [
+        "Very strong non-covalent interaction; time-consuming synthesis",
+        "Suitable for charged NPs with oppositely charged ligands",
+        "Stable in circulation, reversible in reducing intracellular environment",
+        "Rapid, efficient, biocompatible; stable covalent bond",
+        "Biorthogonal 'click chemistry'; rapid, non-toxic, highly stable"
+    ]
+}
+st.table(pd.DataFrame(linkage_data))
+
+st.divider()
+
+# Section 5: Quality Control
+st.header("5. Quality Control and Characterization")
+
+st.markdown("""
+Robust QC ensures pDNA-LNPs meet quality specifications for intended applications and regulatory compliance.
+""")
+
+qc_data = {
+    "Parameter": [
+        "Size & Polydispersity Index (PDI)",
+        "Surface Charge",
+        "pDNA Encapsulation Efficiency",
+        "Surface Ionization (pKa)",
+        "Morphology"
+    ],
+    "Technique": [
+        "Dynamic Light Scattering (DLS)",
+        "Zeta Potential Measurement",
+        "Quant-iT RiboGreen Assay",
+        "TNS Assay",
+        "Transmission Electron Microscopy (TEM)"
+    ],
+    "Description": [
+        "Measures average hydrodynamic diameter and size distribution uniformity (PDI <0.2 = monodisperse)",
+        "Determines electrical charge on surface; influences stability and cell membrane interaction",
+        "Measures intact LNPs (free pDNA) vs. lysed LNPs (total pDNA) using Triton X-100",
+        "Uses TNS probe to measure pKa of ionizable lipid; predicts endosomal escape ability",
+        "Direct visualization to confirm size, spherical shape, and structural integrity"
+    ]
+}
+st.table(pd.DataFrame(qc_data))
+
+st.divider()
+
+# Section 6: Safety and Application
+st.header("6. Strategic Considerations for Application and Safety")
+
+st.subheader("6.1 Mitigating the Inflammatory Response")
+st.markdown("""
+**Problem**: pDNA-LNPs induce severe inflammation via cGAS-STING pathway activation
+
+**Solution**: Incorporate **Nitro-Oleic Acid (NOA)** - an endogenous STING-inhibiting lipid
+
+- **Optimal NOA:Total Lipid Ratio**: 0.2–0.8 mole ratio
+- **Effect**: Suppresses cytokine storm (IFN-β, IL-6)
+- **Result**: Prevents mortality in mice at high doses (1 mg/kg), transforming lethal formulations into viable ones
+
+⚠️ **Critical Safety Component** for clinical translation
+""")
+
+st.subheader("6.2 Physical Methods for Enhanced Cellular Delivery")
+
+method_col1, method_col2 = st.columns(2)
+
+with method_col1:
+    st.markdown("""
+    **Sonoporation**
+    - Uses therapeutic ultrasound (1 MHz, 2 W·cm⁻²)
+    - Stimulates co-administered microbubbles
+    - Cavitation creates transient membrane pores
+    - Direct physical route for LNP entry
+    - **Application**: In vivo tissue-targeted delivery
+    """)
+
+with method_col2:
+    st.markdown("""
+    **Electroporation**
+    - Applies short, intense electric pulses
+    - Transiently permeabilizes cell membrane
+    - High-efficiency LNP uptake
+    - **Application**: Ex vivo cell modification for cell-based therapies
+    """)
+
+st.subheader("6.3 Storage and Handling")
+st.info("""
+📦 **Storage**: 2-8°C (refrigerated)  
+⏱️ **Stability**: Prevents degradation of lipids and pDNA payload  
+🧊 **Long-term**: Consider lyophilization for extended shelf life
+""")
+
+st.divider()
+
+# Section 7: Conclusion
+st.header("7. Conclusion")
+st.markdown("""
+Successful pDNA-LNP preparation requires:
+
+1. ✅ **Principled design** of core components
+2. ✅ **Controlled formulation** for desired physicochemical properties
+3. ✅ **Optional surface functionalization** for targeted delivery
+4. ✅ **Rigorous characterization** for quality and consistency
+5. ✅ **Integration of safety components** (e.g., NOA) to overcome inflammatory toxicity
+
+By addressing these formulation and safety challenges, pDNA-LNPs represent a **highly promising and 
+versatile platform** poised to deliver the next generation of advanced genetic medicines.
+""")
+
+st.divider()
 
 st.markdown("---")
 
