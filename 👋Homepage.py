@@ -28,7 +28,6 @@ st.markdown(
     - With General info, you will have a short description of the LNP formulation and calculation principles.
     - With pDNA Formulation, you will explore the LNP formulation calculator for plasmid DNA.
     - With mRNA Formulation, you will explore the LNP formulation calculator for mRNA.
-    - with N/P Ratio, you will explore the N/P ratio calculator and its principles.
     \n  
     ### Enjoy the app!
     """
