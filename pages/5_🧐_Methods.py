@@ -12,7 +12,6 @@ and streamlined manufacturing. This protocol provides comprehensive guidance for
 functionalization, and characterization of pDNA-LNPs.
 """)
 
-st.divider()
 
 # Section 1: Foundational Principles
 st.header("1. Foundational Principles of pDNA-LNP Design")
@@ -46,7 +45,6 @@ with st.expander("1.2 Key Design Challenges"):
     - **Solution**: Optimize formulation and use physical enhancement methods
     """)
 
-st.divider()
 
 # Section 2: Materials
 st.header("2. Required Materials and Reagents")
@@ -76,7 +74,6 @@ with st.expander("2.2 Solvents and Buffers"):
     pH 7.4 deprotonates lipids to neutral state, reducing toxicity.
     """)
 
-st.divider()
 
 # Section 3: Formulation Protocol
 st.header("3. Step-by-Step LNP Formulation Protocol")
@@ -144,8 +141,6 @@ with st.expander("Step 4: Downstream Processing and Purification"):
     - Reach desired target concentration for dosing
     """)
 
-st.divider()
-
 # Section 4: Surface Modification
 with st.expander("4. Post-Formulation Surface Modification for Targeted Delivery"):
 
@@ -182,7 +177,7 @@ with st.expander("4. Post-Formulation Surface Modification for Targeted Delivery
         }
         st.table(pd.DataFrame(linkage_data))
 
-    st.divider()
+
 
 # Section 5: Quality Control
 with st.expander("5. Quality Control and Characterization"):
@@ -215,7 +210,6 @@ with st.expander("5. Quality Control and Characterization"):
     }
     st.table(pd.DataFrame(qc_data))
 
-st.divider()
 
 # Section 6: Safety and Application
 with st.expander("6. Strategic Considerations for Application and Safety"):
@@ -257,7 +251,7 @@ with st.expander("6. Strategic Considerations for Application and Safety"):
         ⏱️ **Stability**: Prevents degradation of lipids and pDNA payload  
         🧊 **Long-term**: Consider lyophilization for extended shelf life
         """)
-st.divider()
+
 
 # Section 7: Conclusion
 with st.expander("7. Conclusion"):
@@ -274,9 +268,6 @@ with st.expander("7. Conclusion"):
     versatile platform** poised to deliver the next generation of advanced genetic medicines.
     """)
 
-st.divider()
-
-st.markdown("---")
 
 # --- 右侧/下侧：交互式计算器 ---
 st.header("🧮 LNP Formulation Calculator")
