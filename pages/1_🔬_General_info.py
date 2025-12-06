@@ -181,6 +181,24 @@ with st.expander("Show example for 100 µg DNA at N/P = 4; EtOH phase ratios"):
     st.caption("Volumes depend on target total lipid and stocks; see formulas below.")
 
     st.warning("Dilute 100 µg DNA to 180 µL in 25 mM sodium acetate.")
+# Example validation section for pDNA formulation
+st.divider()
+st.header("Example: pDNA Formulation with N/P = 4 and Moderna LNP Formulation")
+with st.expander("Show example for 100 µg DNA at N/P = 4; EtOH phase ratios"):
+    st.markdown("""
+    This example uses the ethanol-phase molar composition:
+    SM102 50%, DSPC 10%, Cholesterol 38.5%, PEG-DMG2000 1.5% (sum 100%).
+    """)
+
+    df_example = pd.DataFrame({
+        "ID": ["SM102", "DSPC", "Cholesterol", "PEG-DMG2000"],
+        "EtOH phase mol%": [50.0, 10.0, 38.5, 1.5],
+        "Stock (µg/µL)": [100.0, 12.5, 20.0, 50.0],
+    })
+    st.table(df_example)
+    st.caption("Volumes depend on target total lipid and stocks; see formulas below.")
+
+    st.warning("Dilute 100 µg DNA to 180 µL in 25 mM sodium acetate.")
 
 # 用公式展示计算过程（可折叠）
 with st.expander("Show detailed calculation formulas"):
