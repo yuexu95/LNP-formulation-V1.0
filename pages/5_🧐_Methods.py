@@ -77,73 +77,72 @@ with st.expander("2.2 Solvents and Buffers"):
 
 # Section 3: Formulation Protocol
 st.header("3. Step-by-Step LNP Formulation Protocol")
-with st.expander("3.1 Preparation of pDNA-LNPs via Rapid Mixing"):
+with st.expander("Preparation of pDNA-LNPs via Rapid Mixing"):
     st.markdown("""
     Formation of pDNA-LNPs is a controlled self-assembly process driven by rapid mixing of lipid-ethanol 
     and pDNA-aqueous phases.
     """)
-with st.expander("Step 1: Preparation of the Lipid Phase (Organic Phase)"):
-    st.markdown("""
-    1. Weigh individual lipid components (ionizable lipid, helper lipid, cholesterol, PEG-lipid)
-    2. Dissolve completely in **absolute ethanol**
-    3. Combine according to predetermined molar ratios (e.g., 40:20:35:5 for HGT5000:DOPE:cholesterol:DMG-PEG2K)
-    4. Ensure complete dissolution and homogeneity
-    """)
-
-with st.expander("Step 2: Preparation of the Aqueous Phase"):
-    st.markdown("""
-    1. Dissolve high-purity plasmid DNA in **Citrate Buffer (10 mM, pH 4.0-4.5)**
-    2. Gently mix until fully dissolved (target concentration: e.g., 1 mg/mL)
-    3. ⚠️ **Avoid vigorous vortexing** - can fragment large plasmid DNA molecules
-""")
-
-with st.expander("Step 3: Nanoparticle Assembly via Rapid Mixing"):
-
-    tab1, tab2 = st.tabs(["Method A: Manual Rapid Injection", "Method B: Microfluidic Mixing"])
-
-    with tab1:
+    with st.expander("Step 1: Preparation of the Lipid Phase (Organic Phase)"):
         st.markdown("""
-        **Procedure:**
-        1. Draw lipid-ethanol solution into syringe
-        2. **Rapidly inject** into stirring aqueous pDNA solution
-        3. Immediately shake or pipette vigorously for homogenous formation
-        4. Incubate for **10 minutes** at room temperature for stabilization
-        
-        **Advantages:** Simple, low equipment cost  
-        **Disadvantages:** Less control, higher batch-to-batch variability
+        1. Weigh individual lipid components (ionizable lipid, helper lipid, cholesterol, PEG-lipid)
+        2. Dissolve completely in **absolute ethanol**
+        3. Combine according to predetermined molar ratios (e.g., 40:20:35:5 for HGT5000:DOPE:cholesterol:DMG-PEG2K)
+        4. Ensure complete dissolution and homogeneity
         """)
 
-    with tab2:
+    with st.expander("Step 2: Preparation of the Aqueous Phase"):
         st.markdown("""
-        **Procedure:**
-        1. Load phases into separate syringes on syringe pumps
-        2. Set **Flow Rate Ratio (FRR)**: typically 3:1 (aqueous:ethanol)
-        3. Set **Total Flow Rate (TFR)**: e.g., 12 mL/min
-        4. Infuse through microfluidic chip for controlled mixing
-        5. Discard first/last drops, collect main product
-        
-        **Advantages:** Superior control, narrow size distribution, high reproducibility  
-        **Disadvantages:** Requires specialized equipment  
-        **Recommended for:** Therapeutic development and regulatory applications
-        """)
-
-with st.expander("Step 4: Downstream Processing and Purification"):
-    st.markdown("""
-    1. **Dialysis**: Transfer to dialysis cassette (20-100 kDa MWCO)
-    - Dialyze against **1x PBS (pH 7.4)** for ≥2 hours
-    - Change buffer 1-2 times
-    - Purpose: Remove ethanol + neutralize pH
-    
-    2. **Sterilization**: Filter through **0.22 µm sterile filter**
-    - Mandatory for in vitro/in vivo applications
-    
-    3. **Concentration** (if needed): Use centrifugal filtration
-    - Reach desired target concentration for dosing
+        1. Dissolve high-purity plasmid DNA in **Citrate Buffer (10 mM, pH 4.0-4.5)**
+        2. Gently mix until fully dissolved (target concentration: e.g., 1 mg/mL)
+        3. ⚠️ **Avoid vigorous vortexing** - can fragment large plasmid DNA molecules
     """)
+
+    with st.expander("Step 3: Nanoparticle Assembly via Rapid Mixing"):
+
+        tab1, tab2 = st.tabs(["Method A: Manual Rapid Injection", "Method B: Microfluidic Mixing"])
+
+        with tab1:
+            st.markdown("""
+            **Procedure:**
+            1. Draw lipid-ethanol solution into syringe
+            2. **Rapidly inject** into stirring aqueous pDNA solution
+            3. Immediately shake or pipette vigorously for homogenous formation
+            4. Incubate for **10 minutes** at room temperature for stabilization
+            
+            **Advantages:** Simple, low equipment cost  
+            **Disadvantages:** Less control, higher batch-to-batch variability
+            """)
+
+        with tab2:
+            st.markdown("""
+            **Procedure:**
+            1. Load phases into separate syringes on syringe pumps
+            2. Set **Flow Rate Ratio (FRR)**: typically 3:1 (aqueous:ethanol)
+            3. Set **Total Flow Rate (TFR)**: e.g., 12 mL/min
+            4. Infuse through microfluidic chip for controlled mixing
+            5. Discard first/last drops, collect main product
+            
+            **Advantages:** Superior control, narrow size distribution, high reproducibility  
+            **Disadvantages:** Requires specialized equipment  
+            **Recommended for:** Therapeutic development and regulatory applications
+            """)
+
+    with st.expander("Step 4: Downstream Processing and Purification"):
+        st.markdown("""
+        1. **Dialysis**: Transfer to dialysis cassette (20-100 kDa MWCO)
+        - Dialyze against **1x PBS (pH 7.4)** for ≥2 hours
+        - Change buffer 1-2 times
+        - Purpose: Remove ethanol + neutralize pH
+        
+        2. **Sterilization**: Filter through **0.22 µm sterile filter**
+        - Mandatory for in vitro/in vivo applications
+        
+        3. **Concentration** (if needed): Use centrifugal filtration
+        - Reach desired target concentration for dosing
+        """)
 
 # Section 4: Surface Modification
 with st.expander("4. Post-Formulation Surface Modification for Targeted Delivery"):
-
     st.markdown("""
     Surface modification with targeting ligands enhances therapeutic potential by improving tissue specificity 
     and reducing off-target effects.
