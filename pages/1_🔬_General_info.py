@@ -34,6 +34,19 @@ A typical LNP formulation consists of four main lipid components:
    reduces aggregation, and increases circulation time by minimizing protein adsorption and immune recognition.
 """)
 
+st.subheader("FDA-Approved LNP Formulations")
+st.markdown("""
+The following are FDA-approved LNP formulations with their molar ratios:
+
+| Ionizable Lipid | Ionizable Lipid (mol%) | Cholesterol (mol%) | Structural Lipid* (mol%) | PEG-Lipid* (mol%) |
+|---|---|---|---|---|
+| **D-Lin-MC3-DMA** | 50% | 38.5% | 10% (DSPC) | 1.5% (DMG-PEG 2000) |
+| **SM-102** | 50% | 38.5% | 10% (DSPC) | 1.5% (DMG-PEG 2000) |
+| **ALC-0315** | 46.3% | 42.7% | 9.4% (DSPC) | 1.6% (ALC-0159) |
+
+*DSPC = 1,2-distearoyl-sn-glycero-3-phosphocholine; DMG-PEG 2000 = Dimyristoyl glycerol PEG 2000; ALC-0159 = Proprietary PEGylated lipid
+""")
+
 st.divider()
 
 st.header("🧮 Calculation Principles")
@@ -163,24 +176,6 @@ Understanding the chemical differences between DNA and RNA helps set correct exp
 Use the **N/P Ratio** tab to quickly compare dsDNA‑based and RNA‑based calculations by adjusting the inputs.
 """)
 
-# Example validation section for pDNA formulation
-st.divider()
-st.header("Example: pDNA Formulation with N/P = 4 and Moderna LNP Formulation")
-with st.expander("Show example for 100 µg DNA at N/P = 4; EtOH phase ratios"):
-    st.markdown("""
-    This example uses the ethanol-phase molar composition:
-    SM102 50%, DSPC 10%, Cholesterol 38.5%, PEG-DMG2000 1.5% (sum 100%).
-    """)
-
-    df_example = pd.DataFrame({
-        "ID": ["SM102", "DSPC", "Cholesterol", "PEG-DMG2000"],
-        "EtOH phase mol%": [50.0, 10.0, 38.5, 1.5],
-        "Stock (µg/µL)": [100.0, 12.5, 20.0, 50.0],
-    })
-    st.table(df_example)
-    st.caption("Volumes depend on target total lipid and stocks; see formulas below.")
-
-    st.warning("Dilute 100 µg DNA to 180 µL in 25 mM sodium acetate.")
 # Example validation section for pDNA formulation
 st.divider()
 st.header("Example: pDNA Formulation with N/P = 4 and Moderna LNP Formulation")
