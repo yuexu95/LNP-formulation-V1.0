@@ -221,6 +221,26 @@ def main():
         st.session_state.history_records.append(record)
         st.success(f"✅ Formulation '{record['Formulation Name']}' saved!")
 
+    # Display formulation history (moved to top)
+    if len(st.session_state.history_records) > 0:
+        st.header('Formulation History', divider='rainbow')
+        history_df = pd.DataFrame(st.session_state.history_records)
+        st.dataframe(history_df, use_container_width=True)
+        
+        # Add CSV export button
+        csv_data = history_df.to_csv(index=False)
+        st.download_button(
+            label="📥 Download as CSV",
+            data=csv_data,
+            file_name="formulation_history.csv",
+            mime="text/csv"
+        )
+        
+        # Add option to clear history
+        if st.button("Clear History"):
+            st.session_state.history_records = []
+            st.rerun()
+
     if st.session_state.result_df is not None:
         # Calculate and display N/P ratio
         np_ratio, n_moles, p_moles = calculate_np_ratio(
@@ -271,17 +291,6 @@ def main():
                     value=st.session_state.checkboxes_col4[index],
                     key=f"col4_{index}"
                 )
-    
-    # Display formulation history
-    if len(st.session_state.history_records) > 0:
-        st.header('Formulation History', divider='rainbow')
-        history_df = pd.DataFrame(st.session_state.history_records)
-        st.dataframe(history_df, use_container_width=True)
-        
-        # Add option to clear history
-        if st.button("Clear History"):
-            st.session_state.history_records = []
-            st.rerun()
 
 if __name__ == "__main__":
     main()
