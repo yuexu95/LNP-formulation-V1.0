@@ -3,52 +3,7 @@ import streamlit as st
 import pandas as pd
 import textwrap
 
-# Example validation section for pDNA formulation
-st.divider()
-st.header("Example: pDNA Formulation with N/P = 4 and Moderna LNP Formulation")
-with st.expander("Show example for 100 µg DNA at N/P = 4; EtOH phase ratios"):
-    st.markdown("""
-    This example uses the ethanol-phase molar composition:
-    SM102 50%, DSPC 10%, Cholesterol 38.5%, PEG-DMG2000 1.5% (sum 100%).
-    """)
 
-    df_example = pd.DataFrame({
-        "ID": ["SM102", "DSPC", "Cholesterol", "PEG-DMG2000"],
-        "EtOH phase mol%": [50.0, 10.0, 38.5, 1.5],
-        "Stock (µg/µL)": [100.0, 12.5, 20.0, 50.0],
-    })
-    st.table(df_example)
-    st.caption("Volumes depend on target total lipid and stocks; see formulas below.")
-
-    st.warning("Dilute 100 µg DNA to 180 µL in 25 mM sodium acetate.")
-
-# 用公式展示计算过程（可折叠）
-with st.expander("Show detailed calculation formulas"):
-    st.latex(r"\textbf{Moderna LNP Formulation for mRNA delivery(EtOH phase mol\%):}\quad f_{\text{SM102}}=0.50,\ f_{\text{DSPC}}=0.10,\ f_{\text{Chol}}=0.385,\ f_{\text{PEG}}=0.015")
-
-    st.latex(r"\textbf{DNA and N/P:}\quad m_{\text{DNA}}=100\,\mu g,\ \text{N/P}=4,\ a=1")
-    st.latex(r"P\,(\mu mol) = \frac{100}{330} \approx 0.30303\,\mu mol\,,\quad N = 4\times 0.30303 \approx 1.21212\,\mu mol")
-
-    st.latex(r"\textbf{Mole split by fraction:}\quad n_{i} = f_{i}\,n_{\text{total}}\,,\ \sum_i f_i=1")
-    st.latex(r"\text{Assume } n_{\text{total}} \text{ consistent with table masses.}")
-
-    st.latex(r"\textbf{Mass from moles:}\quad m_{i}\,(\mu g) = n_{i}\,(\mu mol) \cdot MW_{i}\,(\mu g/\mu mol)")
-    st.latex(r"\text{Table masses (per 100 }\mu g\text{ DNA at N/P=4): }\ m_{\text{SM102}}=860.8484848,\ m_{\text{DSPC}}=191.5515152,\ m_{\text{Chol}}=360.92,\ m_{\text{PEG}}=91.24363636\ (\mu g)")
-
-    st.latex(r"\textbf{Volume from stock:}\quad V_{i}\,(\mu L) = \frac{m_{i}\,(\mu g)}{C_{i}\,(\mu g/\mu L)}")
-    st.latex(r"V_{\text{SM102}} = \frac{860.8484848}{100} \approx 8.6085\,\mu L\,,\ \ V_{\text{DSPC}} = \frac{191.5515152}{12.5} \approx 15.3241\,\mu L")
-    st.latex(r"V_{\text{Chol}} = \frac{360.92}{20} \approx 18.0460\,\mu L\,,\ \ V_{\text{PEG}} = \frac{91.24363636}{50} \approx 1.8249\,\mu L")
-    st.latex(r"V_{\text{EtOH, lipids}} = \sum_i V_i \approx 8.6085+15.3241+18.0460+1.8249 \approx 16.2\,\mu L")
-
-    st.latex(r"\textbf{DNA mixing volume:}\quad V_{\text{DNA}} = 180\,\mu L\ \text{(25 mM sodium acetate)}")
-    st.latex(r"\textbf{Molecular weights (example):}\ \ MW_{\text{SM102}}\approx 1000\,\mu g/\mu mol,\ MW_{\text{DSPC}}=744.034,\ MW_{\text{Chol}}=386.654,\ MW_{\text{PEG}}=2509.2")
-
-    st.latex(r"\textbf{Moles from masses (per table):}\quad n_{i}\,(\mu mol) = \frac{m_{i}\,(\mu g)}{MW_{i}\,(\mu g/\mu mol)}")
-    st.latex(r"n_{\text{SM102}} = \frac{860.8484848}{1000} \approx 0.86085\,\mu mol\,,\ \ n_{\text{DSPC}} = \frac{191.5515152}{744.034} \approx 0.25757\,\mu mol")
-    st.latex(r"n_{\text{Chol}} = \frac{360.92}{386.654} \approx 0.93345\,\mu mol\,,\ \ n_{\text{PEG}} = \frac{91.24363636}{2509.2} \approx 0.03636\,\mu mol")
-    st.latex(r"n_{\text{total}} \approx 0.86085+0.25757+0.93345+0.03636 \approx 2.08823\,\mu mol")
-    st.latex(r"\textbf{Check mol fractions:}\quad f_{i} = \frac{n_{i}}{n_{\text{total}}}\ \Rightarrow\ f_{\text{SM102}}\approx 0.412,\ f_{\text{DSPC}}\approx 0.123,\ f_{\text{Chol}}\approx 0.447,\ f_{\text{PEG}}\approx 0.017")
-    st.latex(r"\text{Note: Actual table masses yield fractions close to provided EtOH mol\% after accounting for formulation specifics.}")
 import streamlit as st
 import pandas as pd
 # Set the layout to wide
@@ -221,11 +176,16 @@ def main():
     with col18:
         amines_per_molecule = st.number_input("Amines per Ionizable Lipid Molecule", min_value=0.0, step=0.1, value=1.0, help="Number of ionizable amine groups per lipid molecule for N/P calculation")
     
+    formulation_name = st.text_input("Formulation Name (for record keeping)", value="", placeholder="Enter a name for this formulation")
+    
     if "result_df" not in st.session_state:
         st.session_state.result_df = None
         st.session_state.volumes = None
         st.session_state.checkboxes_col2 = {}
         st.session_state.checkboxes_col4 = {}
+    
+    if "history_records" not in st.session_state:
+        st.session_state.history_records = []
 
     if st.button("Calculate"):
         result_df, volumes = make_lnp_formulation(
@@ -239,6 +199,27 @@ def main():
         # 初始化复选框状态
         st.session_state.checkboxes_col2 = {index: False for index in result_df.index}
         st.session_state.checkboxes_col4 = {index: False for index in result_df.index}
+        
+        # Calculate N/P ratio
+        np_ratio, n_moles, p_moles = calculate_np_ratio(
+            dna_scale, 
+            volumes["ionizable_lipid_moles"],
+            amines_per_molecule
+        )
+        
+        # Save to history
+        record = {
+            "Formulation Name": formulation_name if formulation_name else "Unnamed",
+            "DNA Scale (μg)": dna_scale,
+            "DNA Stock (μg/μL)": dna_stock_concentration,
+            "IL:DNA Ratio": ionizable_lipid_to_dna_ratio,
+            "Aq:EtOH Ratio": aqueous_to_ethanol_ratio,
+            "N/P Ratio": f"{np_ratio:.3f}",
+            "N (μmol)": f"{n_moles:.4f}",
+            "P (μmol)": f"{p_moles:.4f}",
+        }
+        st.session_state.history_records.append(record)
+        st.success(f"✅ Formulation '{record['Formulation Name']}' saved!")
 
     if st.session_state.result_df is not None:
         # Calculate and display N/P ratio
@@ -290,6 +271,17 @@ def main():
                     value=st.session_state.checkboxes_col4[index],
                     key=f"col4_{index}"
                 )
+    
+    # Display formulation history
+    if len(st.session_state.history_records) > 0:
+        st.header('Formulation History', divider='rainbow')
+        history_df = pd.DataFrame(st.session_state.history_records)
+        st.dataframe(history_df, use_container_width=True)
+        
+        # Add option to clear history
+        if st.button("Clear History"):
+            st.session_state.history_records = []
+            st.rerun()
 
 if __name__ == "__main__":
     main()
