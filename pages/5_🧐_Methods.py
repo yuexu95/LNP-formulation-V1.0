@@ -179,8 +179,8 @@ with st.expander("4. Post-Formulation Surface Modification for Targeted Delivery
             "Rapid, efficient, biocompatible; stable covalent bond",
             "Biorthogonal 'click chemistry'; rapid, non-toxic, highly stable"
         ]
-    }
-    st.table(pd.DataFrame(linkage_data))
+        }
+        st.table(pd.DataFrame(linkage_data))
 
     st.divider()
 
@@ -251,12 +251,12 @@ with st.expander("6. Strategic Considerations for Application and Safety"):
             - **Application**: Ex vivo cell modification for cell-based therapies
             """)
 
-with st.expander("6.3 Storage and Handling"):
-    st.markdown("""
-    📦 **Storage**: 2-8°C (refrigerated)  
-    ⏱️ **Stability**: Prevents degradation of lipids and pDNA payload  
-    🧊 **Long-term**: Consider lyophilization for extended shelf life
-    """)
+    with st.expander("6.3 Storage and Handling"):
+        st.markdown("""
+        📦 **Storage**: 2-8°C (refrigerated)  
+        ⏱️ **Stability**: Prevents degradation of lipids and pDNA payload  
+        🧊 **Long-term**: Consider lyophilization for extended shelf life
+        """)
 st.divider()
 
 # Section 7: Conclusion
@@ -280,7 +280,7 @@ st.markdown("---")
 
 # --- 右侧/下侧：交互式计算器 ---
 st.header("🧮 LNP Formulation Calculator")
-st.info("Input your parameters below to generate the pipetting recipe.")
+st.info("Input your parameters below to generate the pipetting recipe. SM-102/DSPC/Chol/DMG-PEG2K default ratios used.")
 
 # 1. 创建输入列
 col1, col2, col3 = st.columns(3)
@@ -293,10 +293,10 @@ with col1:
 
 with col2:
     st.subheader("2. Molecular Weights (g/mol)")
-    mw_ionizable = st.number_input("MW Ionizable Lipid", value=1000.0)
+    mw_ionizable = st.number_input("MW Ionizable Lipid", value=710.17)
     mw_chol = st.number_input("MW Cholesterol", value=386.65)
     mw_helper = st.number_input("MW Helper (DSPC)", value=790.15)
-    mw_peg = st.number_input("MW PEG-Lipid", value=2500.0)
+    mw_peg = st.number_input("MW PEG-Lipid", value=2507.64)
     avg_mw_nucleotide = 330.0 # Average MW per nucleotide for DNA
 
 with col3:
