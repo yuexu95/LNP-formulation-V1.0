@@ -24,94 +24,151 @@ st.header("🧪 Component Database Configuration")
 st.subheader("Preset as Moderna SM-102 formulation")
 
 with st.expander("📦 Lipid Components Configuration", expanded=True):
-    st.subheader("Lipid Component Properties")
+    st.subheader("Lipid Component Properties - Molecular Weights")
     
-    lipid_col1, lipid_col2 = st.columns(2)
-    
-    with lipid_col1:
-        st.markdown("#### Ionizable Lipid")
+    col_mw1, col_mw2, col_mw3, col_mw4 = st.columns(4)
+    with col_mw1:
         mw_ionizable = st.number_input(
             "Ionizable Lipid MW (g/mol)",
             value=710.182,
-            step=10.0,
+            step=1.0,
             key="mw_ion"
         )
-        conc_ionizable = st.number_input(
-            "Ionizable Lipid Stock (mg/mL)",
-            value=100.0,
-            step=10.0,
-            key="conc_ion",
-            help="Stock concentration in mg/mL"
-        )
-        
-        st.markdown("#### Helper Lipid")
+    with col_mw2:
         mw_helper = st.number_input(
             "Helper Lipid MW (g/mol)",
             value=790.147,
-            step=10.0,
+            step=1.0,
             key="mw_helper"
         )
-        conc_helper = st.number_input(
-            "Helper Lipid Stock (mg/mL)",
-            value=12.5,
-            step=1.0,
-            key="conc_helper",
-            help="Stock concentration in mg/mL"
-        )
-    
-    with lipid_col2:
-        st.markdown("#### Cholesterol")
+    with col_mw3:
         mw_chol = st.number_input(
             "Cholesterol MW (g/mol)",
             value=386.654,
-            step=5.0,
+            step=1.0,
             key="mw_chol"
         )
-        conc_chol = st.number_input(
-            "Cholesterol Stock (mg/mL)",
-            value=20.0,
-            step=1.0,
-            key="conc_chol",
-            help="Stock concentration in mg/mL"
-        )
-        
-        st.markdown("#### PEG-Lipid")
+    with col_mw4:
         mw_peg = st.number_input(
-            "PEG-Lipid MW (g/mol)",
+            "PEG-DMG2000 MW (g/mol)",
             value=2509.2,
-            step=50.0,
+            step=1.0,
             key="mw_peg"
         )
+    
+    st.subheader("Stock Concentrations (μg/μL)")
+    col_conc1, col_conc2, col_conc3, col_conc4 = st.columns(4)
+    with col_conc1:
+        conc_ionizable = st.number_input(
+            "Ionizable Lipid (μg/μL)",
+            value=10.0,
+            step=1.0,
+            key="conc_ion"
+        )
+    with col_conc2:
+        conc_helper = st.number_input(
+            "Helper Lipid (μg/μL)",
+            value=12.5,
+            step=1.0,
+            key="conc_helper"
+        )
+    with col_conc3:
+        conc_chol = st.number_input(
+            "Cholesterol (μg/μL)",
+            value=20.0,
+            step=1.0,
+            key="conc_chol"
+        )
+    with col_conc4:
         conc_peg = st.number_input(
-            "PEG-Lipid Stock (mg/mL)",
-            value=50.0,
-            step=5.0,
-            key="conc_peg",
-            help="Stock concentration in mg/mL"
+            "PEG-DMG2000 (μg/μL)",
+            value=10.0,
+            step=1.0,
+            key="conc_peg"
         )
     
-    st.markdown("---")
-    
-    st.subheader("DNA Parameters (for N/P Ratio Calculation)")
+    st.subheader("DNA Parameters")
     dna_col1, dna_col2 = st.columns(2)
     
     with dna_col1:
         dna_mass_ug = st.number_input(
-            "DNA Mass (μg)",
+            "DNA Scale (μg)",
             value=1.0,
             step=0.1,
             key="dna_mass_ug",
-            help="Amount of DNA in formulation"
+            help="Amount of DNA in formulation (e.g., 100 μg)"
         )
     
     with dna_col2:
         dna_concentration = st.number_input(
-            "DNA Concentration (mg/mL)",
-            value=0.56,
+            "DNA Stock Concentration (μg/μL)",
+            value=1.0,
             step=0.01,
             key="dna_conc",
-            help="Stock concentration of DNA solution (= μg/μL)"
+            help="DNA stock solution concentration"
         )
+
+st.markdown("---")
+
+st.subheader("Molar Ratios (%)")
+col_ratio1, col_ratio2, col_ratio3, col_ratio4 = st.columns(4)
+with col_ratio1:
+    ionizable_lipid_ratio = st.number_input(
+        "Ionizable Lipid (%)",
+        value=50.0,
+        step=1.0,
+        key="ion_ratio"
+    )
+with col_ratio2:
+    helper_lipid_ratio = st.number_input(
+        "Helper Lipid (%)",
+        value=10.0,
+        step=1.0,
+        key="helper_ratio"
+    )
+with col_ratio3:
+    cholesterol_ratio = st.number_input(
+        "Cholesterol (%)",
+        value=38.5,
+        step=0.5,
+        key="chol_ratio"
+    )
+with col_ratio4:
+    pegdmg2000_ratio = st.number_input(
+        "PEG-DMG2000 (%)",
+        value=1.5,
+        step=0.1,
+        key="peg_ratio"
+    )
+
+st.markdown("---")
+
+st.subheader("Additional Parameters")
+col_add1, col_add2, col_add3 = st.columns(3)
+with col_add1:
+    ionizable_lipid_to_dna_ratio = st.number_input(
+        "Ionizable Lipid to DNA Ratio",
+        value=10.0,
+        step=0.1,
+        key="ion_dna_ratio_param",
+        help="μg ionizable lipid per μg DNA"
+    )
+with col_add2:
+    aqueous_to_ethanol_ratio = st.number_input(
+        "Aqueous to Ethanol Ratio",
+        value=3.0,
+        step=0.1,
+        key="aqueous_ethanol_ratio",
+        help="Volume ratio of aqueous to ethanol phase"
+    )
+with col_add3:
+    amines_per_molecule = st.number_input(
+        "Amines per Ionizable Lipid Molecule",
+        value=1.0,
+        step=0.1,
+        key="amines_per_molecule",
+        help="Number of ionizable amine groups per lipid"
+    )
 
 st.markdown("---")
 
@@ -126,7 +183,7 @@ with st.container():
     
     with col_design:
         st.subheader("Design Type")
-        design_type = st.radio(
+        design_type = st.selectbox(
             "Select DOE Method:",
             options=[
                 "Full Factorial (2-Level)",
@@ -158,31 +215,31 @@ with st.container():
 
     st.markdown("---")
 
-    # Variable Ranges
-    st.subheader("📊 Variable Ranges")
-    st.caption("Helper Lipid % is auto-calculated to reach 100%")
+    # DOE Variable Ranges
+    st.subheader("📊 DOE Variable Ranges")
+    st.caption("Define the parameter space for DOE exploration")
 
     ratio_cols = st.columns(4)
     
     with ratio_cols[0]:
-        st.markdown("**Ionizable Lipid**")
+        st.markdown("**Ionizable Lipid %**")
         ion_min = st.number_input("Min %", value=45.0, step=1.0, key="ion_min")
         ion_max = st.number_input("Max %", value=55.0, step=1.0, key="ion_max")
 
     with ratio_cols[1]:
-        st.markdown("**Cholesterol**")
-        chol_min = st.number_input("Min %", value=33.5, step=1.0, key="chol_min")
-        chol_max = st.number_input("Max %", value=43.5, step=1.0, key="chol_max")
+        st.markdown("**Cholesterol %**")
+        chol_pct_min = st.number_input("Min %", value=33.5, step=1.0, key="chol_pct_min")
+        chol_pct_max = st.number_input("Max %", value=43.5, step=1.0, key="chol_pct_max")
 
     with ratio_cols[2]:
-        st.markdown("**PEG-Lipid**")
+        st.markdown("**PEG-DMG2000 %**")
         peg_min = st.number_input("Min %", value=0.5, step=0.1, key="peg_min")
         peg_max = st.number_input("Max %", value=2.5, step=0.1, key="peg_max")
 
     with ratio_cols[3]:
-        st.markdown("**N/P Ratio**")
-        np_min = st.number_input("Min", value=3.0, step=0.5, key="np_min")
-        np_max = st.number_input("Max", value=9.0, step=0.5, key="np_max")
+        st.markdown("**Ionizable:DNA (μg/μg)**")
+        ion_dna_min = st.number_input("Min", value=5.0, step=0.5, key="ion_dna_min", help="Ionizable lipid mass per DNA mass")
+        ion_dna_max = st.number_input("Max", value=15.0, step=0.5, key="ion_dna_max", help="Ionizable lipid mass per DNA mass")
 
     st.markdown("---")
     
@@ -255,10 +312,11 @@ def generate_3level_factorial(ranges_dict):
 
 
 def generate_fractional_factorial(ranges_dict):
-    """Generate fractional factorial (subset of 2^5)."""
+    """Generate fractional factorial (subset of 2-level design)."""
     full_design = generate_2level_factorial(ranges_dict)
     fraction = min(16, len(full_design))
-    return full_design.sample(n=fraction, random_state=42).reset_index(drop=True)
+    sampled = full_design.sample(n=fraction, random_state=42).reset_index(drop=True)
+    return sampled
 
 
 def generate_plackett_burman(ranges_dict):
@@ -266,26 +324,26 @@ def generate_plackett_burman(ranges_dict):
     n_factors = len(ranges_dict)
     factor_names = list(ranges_dict.keys())
     
-    # Standard PB matrix for 12 runs, 11 factors (can handle 5 factors)
+    # Standard PB matrix for 12 runs, 11 factors (can handle 4 factors)
     pb_matrix = np.array([
-        [1, 1, 1, 1, 1],
-        [1, -1, 1, 1, -1],
-        [1, 1, -1, 1, 1],
-        [1, 1, 1, -1, -1],
-        [-1, 1, 1, 1, -1],
-        [-1, -1, 1, 1, 1],
-        [-1, -1, -1, 1, 1],
-        [-1, -1, -1, -1, -1],
-        [-1, 1, -1, -1, 1],
-        [-1, 1, 1, -1, 1],
-        [1, -1, -1, -1, 1],
-        [1, 1, -1, 1, 1],
+        [1, 1, 1, 1],
+        [1, -1, 1, -1],
+        [1, 1, -1, 1],
+        [1, 1, 1, -1],
+        [-1, 1, 1, 1],
+        [-1, -1, 1, 1],
+        [-1, -1, -1, 1],
+        [-1, -1, -1, -1],
+        [-1, 1, -1, -1],
+        [-1, 1, 1, -1],
+        [1, -1, -1, -1],
+        [1, 1, -1, 1],
     ])
     
     design_points = []
-    for point in pb_matrix:
+    for point in pb_matrix[:min(12, 2**(n_factors+1))]:
         scaled_point = {}
-        for i, factor in enumerate(factor_names):
+        for i, factor in enumerate(factor_names[:n_factors]):
             min_val, max_val = ranges_dict[factor]
             scaled_point[factor] = min_val + (point[i] + 1) / 2 * (max_val - min_val)
         design_points.append(scaled_point)
@@ -315,7 +373,7 @@ def generate_central_composite(ranges_dict):
     factor_names = list(ranges_dict.keys())
     n_factors = len(factor_names)
     
-    # Factorial part
+    # Factorial part - use 2-level factorial
     factorial_df = generate_2level_factorial(ranges_dict)
     design_points = [dict(row) for _, row in factorial_df.iterrows()]
     
@@ -374,165 +432,96 @@ def calculate_volumes(
     ionizable_pct, helper_pct, chol_pct, peg_pct,
     mw_ion, mw_helper, mw_chol, mw_peg,
     conc_ion, conc_helper, conc_chol, conc_peg,
-    target_vol_ul,
     dna_mass_ug=None,
-    dna_concentration=None
+    dna_concentration=None,
+    ionizable_lipid_to_dna_ratio=10.0,
+    aqueous_to_ethanol_ratio=3.0,
+    ionizable_lipid_ratio=50.0,
+    helper_lipid_ratio=10.0,
+    cholesterol_ratio=38.5,
+    pegdmg2000_ratio=1.5
 ):
     """
-    Convert molar percentages to pipetting volumes.
+    Convert molar percentages to pipetting volumes using pDNA formulation logic.
     
-    Strategy: 
-    1. Calculate target lipid mass based on DNA amount (total lipid:DNA = 15:1 mass ratio)
-    2. Distribute this mass according to molar percentages
-    3. Calculate volumes from masses using stock concentrations
-    4. Calculate aqueous phase using 3:1 aqueous:organic ratio
-    5. DNA volume from DNA mass and concentration
-    
-    Key formulation rules:
-    - Total lipid mass = DNA mass × 15 (μg)
-    - Aqueous phase (DNA + buffer) = Organic phase (lipids + ethanol) × 3
-    - N/P ratio determined by ionizable lipid to DNA mass ratio
+    This function follows the pDNA formulation approach:
+    1. Use ionizable_lipid_to_dna_ratio to calculate ionizable lipid moles
+    2. Scale other lipids based on molar ratios
+    3. Calculate volumes from masses and stock concentrations
+    4. Apply 3:1 aqueous:organic ratio with citrate buffer
     
     Input units:
     - Percentages: molar %
     - MW: g/mol  
-    - Concentrations: mg/mL (= μg/μL)
-    - Target volume: μL
+    - Concentrations: μg/μL (= mg/mL)
     - DNA mass: μg
-    - DNA concentration: mg/mL (= μg/μL)
+    - DNA concentration: μg/μL (= mg/mL)
+    - ionizable_lipid_to_dna_ratio: μg ionizable per μg DNA
+    - aqueous_to_ethanol_ratio: volume ratio
     """
-    # Calculate target lipid mass based on DNA content
-    # Standard formulation: 15 μg total lipids per 1 μg DNA
-    if dna_mass_ug and dna_mass_ug > 0:
-        target_lipid_mass_ug = dna_mass_ug * 15.0  # Total lipid mass in μg
-        target_lipid_mass_mg = target_lipid_mass_ug / 1000.0  # Convert to mg for calculation
-    else:
-        target_lipid_mass_ug = 15.0  # Default: 15 μg total lipids (for 1 μg DNA)
-        target_lipid_mass_mg = 0.015  # 0.015 mg
+    # Calculate moles of ionizable lipid using the ionizable_lipid_to_dna_ratio
+    ionizable_lipid_moles = (dna_mass_ug * ionizable_lipid_to_dna_ratio) / mw_ion
     
-    # Calculate average molecular weight from molar percentages
-    avg_mw = (ionizable_pct * mw_ion + helper_pct * mw_helper + 
-              chol_pct * mw_chol + peg_pct * mw_peg) / 100.0
+    # Calculate moles of each lipid based on their molar ratios
+    helper_lipid_moles = ionizable_lipid_moles * helper_lipid_ratio / ionizable_lipid_ratio
+    cholesterol_moles = ionizable_lipid_moles * cholesterol_ratio / ionizable_lipid_ratio
+    pegdmg2000_moles = ionizable_lipid_moles * pegdmg2000_ratio / ionizable_lipid_ratio
     
-    # Total moles needed: mass / MW (mg / (g/mol) = mmol, converted to μmol for consistency)
-    total_moles_mmol = target_lipid_mass_mg / avg_mw
-    total_moles_umol = total_moles_mmol * 1000.0
+    # Calculate mass of each lipid
+    ionizable_lipid_mass = ionizable_lipid_moles * mw_ion
+    helper_lipid_mass = helper_lipid_moles * mw_helper
+    cholesterol_mass = cholesterol_moles * mw_chol
+    pegdmg2000_mass = pegdmg2000_moles * mw_peg
     
-    # Calculate moles for each component (in mmol)
-    moles_ion_mmol = (ionizable_pct / 100.0) * total_moles_mmol
-    moles_helper_mmol = (helper_pct / 100.0) * total_moles_mmol
-    moles_chol_mmol = (chol_pct / 100.0) * total_moles_mmol
-    moles_peg_mmol = (peg_pct / 100.0) * total_moles_mmol
+    # Calculate final LNP volume
+    final_lnp_volume = dna_mass_ug / 0.1
     
-    # Convert moles to mass: mmol × (g/mol) = mg
-    mass_ion_mg = moles_ion_mmol * mw_ion
-    mass_helper_mg = moles_helper_mmol * mw_helper
-    mass_chol_mg = moles_chol_mmol * mw_chol
-    mass_peg_mg = moles_peg_mmol * mw_peg
+    # Calculate ethanol phase volume
+    ionizable_lipid_volume = ionizable_lipid_mass / conc_ion
+    helper_lipid_volume = helper_lipid_mass / conc_helper
+    cholesterol_volume = cholesterol_mass / conc_chol
+    pegdmg2000_volume = pegdmg2000_mass / conc_peg
+    ethanol = final_lnp_volume / (aqueous_to_ethanol_ratio + 1) - ionizable_lipid_volume - helper_lipid_volume - cholesterol_volume - pegdmg2000_volume
+    ethanol_phase_volume = ionizable_lipid_volume + helper_lipid_volume + cholesterol_volume + pegdmg2000_volume + ethanol
     
-    # Convert mass to volume: mg / (mg/mL) = mL = 1000 × μL
-    vol_ion_ul = (mass_ion_mg / conc_ion * 1000.0) if conc_ion > 0 else 0
-    vol_helper_ul = (mass_helper_mg / conc_helper * 1000.0) if conc_helper > 0 else 0
-    vol_chol_ul = (mass_chol_mg / conc_chol * 1000.0) if conc_chol > 0 else 0
-    vol_peg_ul = (mass_peg_mg / conc_peg * 1000.0) if conc_peg > 0 else 0
+    # Calculate aqueous phase volume
+    aqueous_phase_volume = final_lnp_volume * (aqueous_to_ethanol_ratio / (aqueous_to_ethanol_ratio + 1))
+    dna_volume = dna_mass_ug / dna_concentration
+    citrate_volume = 0.1 * aqueous_phase_volume
+    water_volume = aqueous_phase_volume - dna_volume - citrate_volume
     
-    # Total lipid volume in organic phase
-    total_lipid_vol_ul = vol_ion_ul + vol_helper_ul + vol_chol_ul + vol_peg_ul
-    
-    # Apply 3:1 aqueous to organic ratio
-    # Aqueous (DNA + buffer) = Organic (lipids + ethanol) × 3
-    # Organic phase = lipids + ethanol
-    # First, calculate ethanol to make a reasonable organic phase
-    
-    # Target organic phase volume (we'll calculate from aqueous constraint)
-    # For now, use a reasonable organic volume target based on lipid content
-    # The ethanol fills the remaining space in organic phase
-    
-    # Calculate DNA volume if DNA parameters provided
-    if dna_mass_ug and dna_concentration and dna_concentration > 0:
-        dna_vol_ul = dna_mass_ug / dna_concentration  # μg / (μg/μL) = μL
-    else:
-        dna_vol_ul = 0
-    
-    # Using 3:1 ratio: aqueous = 3 × organic
-    # aqueous = DNA + buffer
-    # organic = lipids + ethanol
-    # 
-    # Let's say we want to minimize total volume while maintaining 3:1 ratio
-    # organic = lipids + ethanol
-    # aqueous = 3 × organic = DNA + buffer
-    # 
-    # If we set ethanol to fill organic to match the constraint:
-    # We need: (DNA + buffer) = 3 × (lipids + ethanol)
-    # Therefore: buffer = 3 × (lipids + ethanol) - DNA
-    # 
-    # Let's use a reasonable approach: set organic phase to be slightly larger than lipids
-    # A common approach is to target a specific total volume or ratio
-    
-    # Method: Start with lipid volume, add ethanol to reach a target organic volume
-    # Then calculate aqueous to maintain 3:1 ratio
-    
-    # Target: minimize volume while maintaining ratios
-    # Minimum organic = total_lipid_vol_ul (no ethanol)
-    # But typically we want some ethanol for mixing
-    
-    # Use a heuristic: make organic phase = lipids × 1.2 (add 20% ethanol)
-    # Or use the table pattern: calculate from DNA volume
-    
-    # From table analysis: for 100 μg DNA with DNA vol 178.5 μL
-    # organic = 59.9 μL, aqueous = 180 μL
-    # Let's use: organic ≈ lipids + reasonable ethanol
-    
-    # Simple approach: Calculate organic to satisfy 3:1 with given DNA
-    # aqueous = DNA + buffer
-    # We want: aqueous = 3 × organic
-    # So: DNA + buffer = 3 × (lipids + ethanol)
-    # buffer = 3 × (lipids + ethanol) - DNA
-    # ethanol = organic - lipids
-    # 
-    # We need to choose organic volume. Let's use a target based on formulation scale
-    # For small scale (1 μg DNA): organic ≈ 0.5-1 μL
-    # For large scale (100 μg DNA): organic ≈ 60 μL
-    
-    # Pattern from table: organic / DNA ≈ 60 / 178.5 ≈ 0.336
-    # So: target_organic = dna_vol_ul × 0.336
-    
-    if dna_vol_ul > 0:
-        # Use the ratio from experimental data
-        target_organic_vol = dna_vol_ul * 0.336  # Empirical ratio from table
-        ethanol_vol_ul = max(0, target_organic_vol - total_lipid_vol_ul)
-    else:
-        # Default: add some ethanol
-        ethanol_vol_ul = total_lipid_vol_ul * 0.2  # 20% ethanol by volume
-        target_organic_vol = total_lipid_vol_ul + ethanol_vol_ul
-    
-    # Calculate aqueous phase using 3:1 ratio
-    actual_organic_vol = total_lipid_vol_ul + ethanol_vol_ul
-    target_aqueous_vol = actual_organic_vol * 3.0
-    
-    # Buffer = aqueous - DNA
-    buffer_vol_ul = max(0, target_aqueous_vol - dna_vol_ul)
-    
-    # Total volume
-    total = total_lipid_vol_ul + ethanol_vol_ul + dna_vol_ul + buffer_vol_ul
+    # Calculate total volume
+    total = ionizable_lipid_volume + helper_lipid_volume + cholesterol_volume + pegdmg2000_volume + ethanol + dna_volume + citrate_volume + water_volume
     
     return {
-        "Ionizable_Vol_uL": round(vol_ion_ul, 2),
-        "Helper_Vol_uL": round(vol_helper_ul, 2),
-        "Chol_Vol_uL": round(vol_chol_ul, 2),
-        "PEG_Vol_uL": round(vol_peg_ul, 2),
-        "Ethanol_Vol_uL": round(ethanol_vol_ul, 2),
-        "DNA_Vol_uL": round(dna_vol_ul, 2),
-        "Buffer_Vol_uL": round(buffer_vol_ul, 2),
+        "Ionizable_Vol_uL": round(ionizable_lipid_volume, 2),
+        "Helper_Vol_uL": round(helper_lipid_volume, 2),
+        "Chol_Vol_uL": round(cholesterol_volume, 2),
+        "PEG_Vol_uL": round(pegdmg2000_volume, 2),
+        "Ethanol_Vol_uL": round(ethanol, 2),
+        "DNA_Vol_uL": round(dna_volume, 2),
+        "Citrate_Vol_uL": round(citrate_volume, 2),
+        "Water_Vol_uL": round(water_volume, 2),
         "Total_Vol_uL": round(total, 2),
-        "Ionizable_Moles": total_moles_umol * (ionizable_pct / 100.0)  # Return ionizable moles in μmol for N/P calculation
+        "Ionizable_Moles": ionizable_lipid_moles,  # Return ionizable moles for N/P calculation
+        "Phosphate_Moles": dna_mass_ug * 1e-6 / 330.0 * 1e6  # phosphate moles in μmol
     }
 
 
 def generate_run_sheet(design_df, num_replicates, num_blocks, mw_ion, mw_helper, mw_chol, mw_peg,
-                       conc_ion, conc_helper, conc_chol, conc_peg, target_vol_ul,
-                       dna_mass_ug=None, dna_concentration=None):
-    """Generate a complete run sheet with pipetting volumes and N/P ratios."""
+                       conc_ion, conc_helper, conc_chol, conc_peg,
+                       dna_mass_ug=None, dna_concentration=None,
+                       ionizable_lipid_to_dna_ratio=10.0,
+                       aqueous_to_ethanol_ratio=3.0,
+                       ionizable_lipid_ratio=50.0,
+                       helper_lipid_ratio=10.0,
+                       cholesterol_ratio=38.5,
+                       pegdmg2000_ratio=1.5,
+                       amines_per_molecule=1.0):
+    """
+    Generate a complete run sheet with pipetting volumes and N/P ratios.
+    Uses pDNA formulation calculation logic.
+    """
     run_data = []
     run_number = 1
     
@@ -541,7 +530,7 @@ def generate_run_sheet(design_df, num_replicates, num_blocks, mw_ion, mw_helper,
             ion_pct = row["Ionizable_%"]
             chol_pct = row["Cholesterol_%"]
             peg_pct = row["PEG_%"]
-            np_ratio_target = row.get("NP_Ratio", None)
+            ion_dna_ratio_target = row.get("Ion_DNA_Ratio", None)
             
             normalized = normalize_molar_ratios(ion_pct, chol_pct, peg_pct)
             if normalized is None:
@@ -553,15 +542,22 @@ def generate_run_sheet(design_df, num_replicates, num_blocks, mw_ion, mw_helper,
                 ion_pct, helper_pct, chol_pct, peg_pct,
                 mw_ion, mw_helper, mw_chol, mw_peg,
                 conc_ion, conc_helper, conc_chol, conc_peg,
-                target_vol_ul,
                 dna_mass_ug=dna_mass_ug,
-                dna_concentration=dna_concentration
+                dna_concentration=dna_concentration,
+                ionizable_lipid_to_dna_ratio=ionizable_lipid_to_dna_ratio,
+                aqueous_to_ethanol_ratio=aqueous_to_ethanol_ratio,
+                ionizable_lipid_ratio=ionizable_lipid_ratio,
+                helper_lipid_ratio=helper_lipid_ratio,
+                cholesterol_ratio=cholesterol_ratio,
+                pegdmg2000_ratio=pegdmg2000_ratio
             )
             
-            # Calculate N/P ratio if DNA parameters provided
-            np_ratio_calc = None
-            if dna_mass_ug and vol_dict["Ionizable_Moles"]:
-                np_ratio_calc, _, _ = calculate_np_ratio(dna_mass_ug, vol_dict["Ionizable_Moles"], 1.0)
+            # Calculate N/P ratio
+            ionizable_moles = vol_dict["Ionizable_Moles"]
+            phosphate_moles = vol_dict["Phosphate_Moles"]
+            amine_moles = ionizable_moles * amines_per_molecule
+            
+            np_ratio = amine_moles / phosphate_moles if phosphate_moles > 0 else 0
             
             for rep in range(num_replicates):
                 run_data.append({
@@ -573,15 +569,16 @@ def generate_run_sheet(design_df, num_replicates, num_blocks, mw_ion, mw_helper,
                     "Helper_%": round(helper_pct, 2),
                     "Cholesterol_%": round(chol_pct, 2),
                     "PEG_%": round(peg_pct, 2),
-                    "NP_Ratio_Target": np_ratio_target if np_ratio_target else "N/A",
-                    "NP_Ratio_Calc": round(np_ratio_calc, 2) if np_ratio_calc else "N/A",
+                    "Ion_DNA_Target": ion_dna_ratio_target if ion_dna_ratio_target else "N/A",
+                    "NP_Ratio": round(np_ratio, 2),
                     "Ionizable_Vol_uL": vol_dict["Ionizable_Vol_uL"],
                     "Helper_Vol_uL": vol_dict["Helper_Vol_uL"],
                     "Chol_Vol_uL": vol_dict["Chol_Vol_uL"],
                     "PEG_Vol_uL": vol_dict["PEG_Vol_uL"],
                     "Ethanol_Vol_uL": vol_dict["Ethanol_Vol_uL"],
                     "DNA_Vol_uL": vol_dict["DNA_Vol_uL"],
-                    "Buffer_Vol_uL": vol_dict["Buffer_Vol_uL"],
+                    "Citrate_Vol_uL": vol_dict["Citrate_Vol_uL"],
+                    "Water_Vol_uL": vol_dict["Water_Vol_uL"],
                     "Total_Vol_uL": vol_dict["Total_Vol_uL"],
                     "Timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                     "Notes": ""
@@ -599,16 +596,16 @@ st.markdown("---")
 
 if st.button("🚀 Generate DOE Design", type="primary", use_container_width=True):
     
-    if ion_min >= ion_max or chol_min >= chol_max or peg_min >= peg_max or np_min >= np_max:
+    if ion_min >= ion_max or chol_pct_min >= chol_pct_max or peg_min >= peg_max or ion_dna_min >= ion_dna_max:
         st.error("❌ Min must be less than Max for all variable ranges.")
     else:
         with st.spinner("Generating DOE design..."):
             
             ranges = {
                 "Ionizable_%": (ion_min, ion_max),
-                "Cholesterol_%": (chol_min, chol_max),
+                "Cholesterol_%": (chol_pct_min, chol_pct_max),
                 "PEG_%": (peg_min, peg_max),
-                "NP_Ratio": (np_min, np_max)
+                "Ion_DNA_Ratio": (ion_dna_min, ion_dna_max)
             }
             
             try:
@@ -631,9 +628,15 @@ if st.button("🚀 Generate DOE Design", type="primary", use_container_width=Tru
                     design_df, num_replicates, num_blocks,
                     mw_ionizable, mw_helper, mw_chol, mw_peg,
                     conc_ionizable, conc_helper, conc_chol, conc_peg,
-                    target_vol_ul=200.0,
                     dna_mass_ug=dna_mass_ug,
-                    dna_concentration=dna_concentration
+                    dna_concentration=dna_concentration,
+                    ionizable_lipid_to_dna_ratio=ionizable_lipid_to_dna_ratio,
+                    aqueous_to_ethanol_ratio=aqueous_to_ethanol_ratio,
+                    ionizable_lipid_ratio=ionizable_lipid_ratio,
+                    helper_lipid_ratio=helper_lipid_ratio,
+                    cholesterol_ratio=cholesterol_ratio,
+                    pegdmg2000_ratio=pegdmg2000_ratio,
+                    amines_per_molecule=amines_per_molecule
                 )
                 
                 st.session_state.design_df = design_df
@@ -706,8 +709,8 @@ if "run_sheet" in st.session_state:
         st.info(f"📌 Showing first {show_rows} of {len(run_sheet)} runs. Download full sheet below.")
     
     # Show N/P Ratio summary if calculated
-    if "NP_Ratio_Calc" in run_sheet.columns and run_sheet["NP_Ratio_Calc"].dtype != 'object':
-        np_values = pd.to_numeric(run_sheet["NP_Ratio_Calc"], errors='coerce')
+    if "NP_Ratio" in run_sheet.columns and run_sheet["NP_Ratio"].dtype != 'object':
+        np_values = pd.to_numeric(run_sheet["NP_Ratio"], errors='coerce')
         np_values = np_values.dropna()
         if len(np_values) > 0:
             st.markdown("---")
@@ -820,10 +823,10 @@ if "run_sheet" in st.session_state:
             summary_data = {
                 "Parameter": ["Design Type", "Design Points", "Replicates", "Blocks", "Total Runs", 
                              "Response Type", "Generated", "Ionizable MW", "Helper MW", 
-                             "Chol MW", "PEG MW", "N/P Ratio Range"],
+                             "Chol MW", "PEG MW", "Ion/DNA Ratio Range"],
                 "Value": [design_type_used, len(design_df), num_replicates, num_blocks, len(run_sheet),
                          response_type, datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                         mw_ionizable, mw_helper, mw_chol, mw_peg, f"{np_min:.1f} - {np_max:.1f}"]
+                         mw_ionizable, mw_helper, mw_chol, mw_peg, f"{ion_dna_min:.1f} - {ion_dna_max:.1f}"]
             }
             summary_df = pd.DataFrame(summary_data)
             summary_df.to_excel(writer, sheet_name='Summary', index=False)
@@ -844,12 +847,12 @@ if "run_sheet" in st.session_state:
     stat_col1, stat_col2 = st.columns(2)
     
     with stat_col1:
-        st.markdown("**Molar Ratio & N/P Coverage**")
+        st.markdown("**Molar Ratio & Ion/DNA Coverage**")
         st.text(f"""Ion:    {design_display['Ionizable_%'].min():.1f} → {design_display['Ionizable_%'].max():.1f}%
 Chol:   {design_display['Cholesterol_%'].min():.1f} → {design_display['Cholesterol_%'].max():.1f}%
 PEG:    {design_display['PEG_%'].min():.1f} → {design_display['PEG_%'].max():.1f}%
 Helper: {design_display['Helper_%'].min():.1f} → {design_display['Helper_%'].max():.1f}%
-N/P:    {np_min:.1f} → {np_max:.1f}""")
+Ion/DNA: {ion_dna_min:.1f} → {ion_dna_max:.1f}""")
     
     with stat_col2:
         st.markdown("**Volume Range (µL)**")

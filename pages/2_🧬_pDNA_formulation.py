@@ -150,23 +150,23 @@ def main():
 
     col9, col10, col11, col12 = st.columns(4)
     with col9:
-        ionizable_lipid_concentration = st.number_input("Ionizable Lipid Concentration (μg/μL)", min_value=0.0, step=1.0, value=100.0)
+        ionizable_lipid_concentration = st.number_input("Ionizable Lipid Concentration (μg/μL)", min_value=0.0, step=1.0, value=10.0)
     with col10:
         helper_lipid_concentration = st.number_input("Helper Lipid Concentration (μg/μL)", min_value=0.0, step=1.0, value=12.5)
     with col11:
         cholesterol_concentration = st.number_input("Cholesterol Concentration (μg/μL)", min_value=0.0, step=1.0, value=20.0)
     with col12:
-        pegdmg2000_concentration = st.number_input("PEG-DMG2000 Concentration (μg/μL)", min_value=0.0, step=1.0, value=50.0)
+        pegdmg2000_concentration = st.number_input("PEG-DMG2000 Concentration (μg/μL)", min_value=0.0, step=1.0, value=10.0)
     
     col13, col14, col15, col16 = st.columns(4)
     with col13:
-        ionizable_lipid_ratio = st.number_input("Ionizable Lipid Molar Ratio", min_value=0.0, step=1.0, value=50.0)
+        ionizable_lipid_ratio = st.number_input("Ionizable Lipid Molar Ratio (%)", min_value=0.0, step=1.0, value=50.0)
     with col14:
-        helper_lipid_ratio = st.number_input("Helper Lipid Molar Ratio", min_value=0.0, step=1.0, value=10.0)
+        helper_lipid_ratio = st.number_input("Helper Lipid Molar Ratio (%)", min_value=0.0, step=1.0, value=10.0)
     with col15:
-        cholesterol_ratio = st.number_input("Cholesterol Molar Ratio", min_value=0.0, step=0.5, value=38.5)
+        cholesterol_ratio = st.number_input("Cholesterol Molar Ratio (%)", min_value=0.0, step=0.5, value=38.5)
     with col16:
-        pegdmg2000_ratio = st.number_input("PEG-DMG2000 Molar Ratio", min_value=0.0, step=0.1, value=1.5)
+        pegdmg2000_ratio = st.number_input("PEG-DMG2000 Molar Ratio (%)", min_value=0.0, step=0.1, value=1.5)
     
     col17, col18 = st. columns(2)
     with col17:
@@ -235,11 +235,20 @@ def main():
             file_name="formulation_history.csv",
             mime="text/csv"
         )
-        
         # Add option to clear history
-        if st.button("Clear History"):
-            st.session_state.history_records = []
-            st.rerun()
+        col_download, col_clear = st.columns(2)
+        with col_download:
+            csv_data = history_df.to_csv(index=False)
+            st.download_button(
+            label="📥 Download as CSV",
+            data=csv_data,
+            file_name="formulation_history.csv",
+            mime="text/csv"
+            )
+        with col_clear:
+            if st.button("🗑️ Clear History"):
+                st.session_state.history_records = []
+                st.rerun()
 
     if st.session_state.result_df is not None:
         # Calculate and display N/P ratio
@@ -259,38 +268,6 @@ def main():
             st.metric("P (phosphate groups, μmol)", f"{p_moles:.4f}")
         
         st.caption(f"📌 N/P ratio represents the molar ratio of cationic tertiary amine groups to anionic phosphate groups. For dsDNA: P = DNA mass (μg) / 330")
-        
-        st.header('LNP Formulation Volumes', divider='rainbow')
-        col1, col2, col3, col4 = st.columns(4)
-        
-        with col1:
-            st.markdown("Single LNP")
-            
-            st.dataframe(st.session_state.result_df)
-
-        with col2:
-            st.markdown("Checklist")
-            for index, row in st.session_state.result_df.iterrows():
-                st.session_state.checkboxes_col2[index] = st.checkbox(
-                    f"{row['Component']}", 
-                    value=st.session_state.checkboxes_col2[index],
-                    key=f"col2_{index}"
-                )               
-        with col3:
-            st.markdown("EtOH Phasex1.5, Aqueous Phasex1.2")
-        
-            if st.session_state.volumes is not None:
-                bulk_volumes = prepare_bulk_lnp_volumes(st.session_state.volumes, bulk_times)
-                st.dataframe(bulk_volumes)
-
-        with col4:
-            st.markdown("Checklist")
-            for index, row in st.session_state.result_df.iterrows():
-                st.session_state.checkboxes_col4[index] = st.checkbox(
-                    f"{row['Component']}", 
-                    value=st.session_state.checkboxes_col4[index],
-                    key=f"col4_{index}"
-                )
 
 if __name__ == "__main__":
     main()
