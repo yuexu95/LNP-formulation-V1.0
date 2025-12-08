@@ -203,7 +203,7 @@ with st.container():
             "Number of Replicates",
             value=1,
             min_value=1,
-            max_value=5
+            max_value=10000,
         )
         num_blocks = st.number_input(
             "Number of Blocks",
