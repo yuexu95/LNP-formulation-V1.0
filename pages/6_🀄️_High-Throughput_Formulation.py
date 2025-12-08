@@ -569,7 +569,7 @@ def generate_run_sheet(design_df, num_replicates, num_blocks, mw_ion, mw_helper,
             ion_pct = row["Ionizable_%"]
             chol_pct = row["Cholesterol_%"]
             peg_pct = row["PEG_%"]
-            ion_dna_ratio_target = row.get("Ion_DNA_Ratio", None)
+            ion_dna_ratio_target = row.get("Ion_DNA_Ratio", ionizable_lipid_to_dna_ratio)
             
             normalized = normalize_molar_ratios(ion_pct, chol_pct, peg_pct)
             if normalized is None:
@@ -577,13 +577,16 @@ def generate_run_sheet(design_df, num_replicates, num_blocks, mw_ion, mw_helper,
             
             ion_pct, helper_pct, chol_pct, peg_pct = normalized
             
+            # Use the DOE-specific Ion_DNA_Ratio if available
+            ion_dna_for_calc = ion_dna_ratio_target if ion_dna_ratio_target != "N/A" else ionizable_lipid_to_dna_ratio
+            
             vol_dict = calculate_volumes(
                 ion_pct, helper_pct, chol_pct, peg_pct,
                 mw_ion, mw_helper, mw_chol, mw_peg,
                 conc_ion, conc_helper, conc_chol, conc_peg,
                 dna_mass_ug=dna_mass_ug,
                 dna_concentration=dna_concentration,
-                ionizable_lipid_to_dna_ratio=ionizable_lipid_to_dna_ratio,
+                ionizable_lipid_to_dna_ratio=ion_dna_for_calc,
                 aqueous_to_ethanol_ratio=aqueous_to_ethanol_ratio,
                 ionizable_lipid_ratio=ionizable_lipid_ratio,
                 helper_lipid_ratio=helper_lipid_ratio,
