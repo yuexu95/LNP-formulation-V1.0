@@ -227,23 +227,15 @@ def main():
         history_df = pd.DataFrame(st.session_state.history_records)
         st.dataframe(history_df, use_container_width=True)
         
-        # Add CSV export button
-        csv_data = history_df.to_csv(index=False)
-        st.download_button(
-            label="📥 Download as CSV",
-            data=csv_data,
-            file_name="formulation_history.csv",
-            mime="text/csv"
-        )
-        # Add option to clear history
+        # Add CSV export button and clear history option
         col_download, col_clear = st.columns(2)
         with col_download:
             csv_data = history_df.to_csv(index=False)
             st.download_button(
-            label="📥 Download as CSV",
-            data=csv_data,
-            file_name="formulation_history.csv",
-            mime="text/csv"
+                label="📥 Download as CSV",
+                data=csv_data,
+                file_name="formulation_history.csv",
+                mime="text/csv"
             )
         with col_clear:
             if st.button("🗑️ Clear History"):
