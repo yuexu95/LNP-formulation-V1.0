@@ -223,13 +223,13 @@ with st.container():
     
     with ratio_cols[0]:
         st.markdown("**Ionizable Lipid %**")
-        ion_min = st.number_input("Min %", value=45.0, step=1.0, key="ion_min")
-        ion_max = st.number_input("Max %", value=55.0, step=1.0, key="ion_max")
+        ion_min = st.number_input("Min %", value=45.0, step=0.1, key="ion_min")
+        ion_max = st.number_input("Max %", value=55.0, step=0.1, key="ion_max")
 
     with ratio_cols[1]:
         st.markdown("**Cholesterol %**")
-        chol_pct_min = st.number_input("Min %", value=33.5, step=1.0, key="chol_pct_min")
-        chol_pct_max = st.number_input("Max %", value=43.5, step=1.0, key="chol_pct_max")
+        chol_pct_min = st.number_input("Min %", value=33.5, step=0.1, key="chol_pct_min")
+        chol_pct_max = st.number_input("Max %", value=43.5, step=0.1, key="chol_pct_max")
 
     with ratio_cols[2]:
         st.markdown("**PEG-DMG2000 %**")
@@ -238,8 +238,8 @@ with st.container():
 
     with ratio_cols[3]:
         st.markdown("**Ionizable:DNA (μg/μg)**")
-        ion_dna_min = st.number_input("Min", value=5.0, step=0.5, key="ion_dna_min", help="Ionizable lipid mass per DNA mass")
-        ion_dna_max = st.number_input("Max", value=15.0, step=0.5, key="ion_dna_max", help="Ionizable lipid mass per DNA mass")
+        ion_dna_min = st.number_input("Min", value=5.0, step=0.1, key="ion_dna_min", help="Ionizable lipid mass per DNA mass")
+        ion_dna_max = st.number_input("Max", value=15.0, step=0.1, key="ion_dna_max", help="Ionizable lipid mass per DNA mass")
 
     st.markdown("---")
     
