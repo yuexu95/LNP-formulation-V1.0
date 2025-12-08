@@ -775,15 +775,20 @@ if "run_sheet" in st.session_state:
     
     st.subheader("📊 Design Space Visualization")
     
+    # Get unique design points only (for visualization, not run sheet)
+    design_for_viz = design_display.drop_duplicates(
+        subset=["Ionizable_%", "Cholesterol_%", "PEG_%"]
+    ).reset_index(drop=True)
+    
     # 3D Molar Ratio Space: Ionizable vs Cholesterol vs PEG
     fig3d_molar = go.Figure(data=[go.Scatter3d(
-        x=design_display["Ionizable_%"],
-        y=design_display["Cholesterol_%"],
-        z=design_display["PEG_%"],
+        x=design_for_viz["Ionizable_%"],
+        y=design_for_viz["Cholesterol_%"],
+        z=design_for_viz["PEG_%"],
         mode='markers',
         marker=dict(
             size=8,
-            color=design_display["Helper_%"],
+            color=design_for_viz["Helper_%"],
             colorscale='Viridis',
             showscale=True,
             colorbar=dict(title="Helper %", x=1.1),
@@ -791,10 +796,10 @@ if "run_sheet" in st.session_state:
             opacity=0.9
         ),
         text=[f"Ion: {i:.1f}%<br>Chol: {c:.1f}%<br>PEG: {p:.1f}%<br>Helper: {h:.1f}%" 
-              for i, c, p, h in zip(design_display["Ionizable_%"], 
-                                   design_display["Cholesterol_%"],
-                                   design_display["PEG_%"],
-                                   design_display["Helper_%"])],
+              for i, c, p, h in zip(design_for_viz["Ionizable_%"], 
+                                   design_for_viz["Cholesterol_%"],
+                                   design_for_viz["PEG_%"],
+                                   design_for_viz["Helper_%"])],
         hoverinfo='text',
         name='Design Points'
     )])
