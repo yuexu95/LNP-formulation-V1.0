@@ -150,13 +150,13 @@ def main():
 
     col9, col10, col11, col12 = st.columns(4)
     with col9:
-        ionizable_lipid_concentration = st.number_input("Ionizable Lipid Concentration (μg/μL)", min_value=0.0, step=1.0, value=10.0)
+        ionizable_lipid_concentration = st.number_input("Ionizable Lipid Concentration (μg/μL)", min_value=0.0, step=1.0, value=20.0)
     with col10:
-        helper_lipid_concentration = st.number_input("Helper Lipid Concentration (μg/μL)", min_value=0.0, step=1.0, value=12.5)
+        helper_lipid_concentration = st.number_input("Helper Lipid Concentration (μg/μL)", min_value=0.0, step=1.0, value=5.0)
     with col11:
-        cholesterol_concentration = st.number_input("Cholesterol Concentration (μg/μL)", min_value=0.0, step=1.0, value=20.0)
+        cholesterol_concentration = st.number_input("Cholesterol Concentration (μg/μL)", min_value=0.0, step=1.0, value=10.0)
     with col12:
-        pegdmg2000_concentration = st.number_input("PEG-DMG2000 Concentration (μg/μL)", min_value=0.0, step=1.0, value=10.0)
+        pegdmg2000_concentration = st.number_input("PEG-DMG2000 Concentration (μg/μL)", min_value=0.0, step=1.0, value=2.0)
     
     col13, col14, col15, col16 = st.columns(4)
     with col13:
