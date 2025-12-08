@@ -31,28 +31,28 @@ with st.expander("📦 Lipid Components Configuration", expanded=True):
         mw_ionizable = st.number_input(
             "Ionizable Lipid MW (g/mol)",
             value=710.182,
-            step=1.0,
+            step=0.1,
             key="mw_ion"
         )
     with col_mw2:
         mw_helper = st.number_input(
             "Helper Lipid MW (g/mol)",
             value=790.147,
-            step=1.0,
+            step=0.1,
             key="mw_helper"
         )
     with col_mw3:
         mw_chol = st.number_input(
             "Cholesterol MW (g/mol)",
             value=386.654,
-            step=1.0,
+            step=0.1,
             key="mw_chol"
         )
     with col_mw4:
         mw_peg = st.number_input(
             "PEG-DMG2000 MW (g/mol)",
             value=2509.2,
-            step=1.0,
+            step=0.1,
             key="mw_peg"
         )
     
@@ -61,29 +61,29 @@ with st.expander("📦 Lipid Components Configuration", expanded=True):
     with col_conc1:
         conc_ionizable = st.number_input(
             "Ionizable Lipid (μg/μL)",
-            value=10.0,
-            step=1.0,
+            value=20.0,
+            step=0.1,
             key="conc_ion"
         )
     with col_conc2:
         conc_helper = st.number_input(
             "Helper Lipid (μg/μL)",
-            value=12.5,
-            step=1.0,
+            value=5.0,
+            step=0.1,
             key="conc_helper"
         )
     with col_conc3:
         conc_chol = st.number_input(
             "Cholesterol (μg/μL)",
-            value=20.0,
-            step=1.0,
+            value=10.0,
+            step=0.1,
             key="conc_chol"
         )
     with col_conc4:
         conc_peg = st.number_input(
             "PEG-DMG2000 (μg/μL)",
-            value=10.0,
-            step=1.0,
+            value=2.0,
+            step=0.1,
             key="conc_peg"
         )
     
@@ -93,10 +93,10 @@ with st.expander("📦 Lipid Components Configuration", expanded=True):
     with dna_col1:
         dna_mass_ug = st.number_input(
             "DNA Scale (μg)",
-            value=1.0,
+            value=3.0,
             step=0.1,
             key="dna_mass_ug",
-            help="Amount of DNA in formulation (e.g., 100 μg)"
+            help="The minimum volume for pDNA-LNP should be 30 μL, otherwise pipetting errors may occur."
         )
     
     with dna_col2:
@@ -116,21 +116,21 @@ with col_ratio1:
     ionizable_lipid_ratio = st.number_input(
         "Ionizable Lipid (%)",
         value=50.0,
-        step=1.0,
+        step=0.1,
         key="ion_ratio"
     )
 with col_ratio2:
     helper_lipid_ratio = st.number_input(
         "Helper Lipid (%)",
         value=10.0,
-        step=1.0,
+        step=0.1,
         key="helper_ratio"
     )
 with col_ratio3:
     cholesterol_ratio = st.number_input(
         "Cholesterol (%)",
         value=38.5,
-        step=0.5,
+        step=0.1,
         key="chol_ratio"
     )
 with col_ratio4:
@@ -148,7 +148,7 @@ col_add1, col_add2, col_add3 = st.columns(3)
 with col_add1:
     ionizable_lipid_to_dna_ratio = st.number_input(
         "Ionizable Lipid to DNA Ratio",
-        value=10.0,
+        value=5.0,
         step=0.1,
         key="ion_dna_ratio_param",
         help="μg ionizable lipid per μg DNA"
@@ -274,11 +274,50 @@ with st.container():
 # ============================================================================
 
 def normalize_molar_ratios(ionizable_pct, cholesterol_pct, peg_pct):
-    """Normalize three components so that Ionizable + Cholesterol + PEG + Helper = 100%."""
+    """
+    Normalize three components so that Ionizable + Cholesterol + PEG + Helper = 100%.
+    Returns None if the combination is invalid (would result in negative Helper %).
+    """
     helper_pct = 100.0 - ionizable_pct - cholesterol_pct - peg_pct
     if helper_pct < 0:
         return None
     return ionizable_pct, helper_pct, cholesterol_pct, peg_pct
+
+
+def filter_valid_design_points(design_df, min_helper_pct=0.5):
+    """
+    Filter DOE design points to ensure all molar ratios are valid.
+    
+    A valid combination requires:
+    Ionizable + Cholesterol + PEG + Helper = 100%
+    And Helper >= min_helper_pct (default 0.5%)
+    
+    This removes points where the sum of Ion + Chol + PEG > 100% - min_helper_pct
+    """
+    if not {"Ionizable_%", "Cholesterol_%", "PEG_%"}.issubset(design_df.columns):
+        return design_df  # If not all columns present, return unchanged
+    
+    valid_mask = (
+        design_df["Ionizable_%"] + 
+        design_df["Cholesterol_%"] + 
+        design_df["PEG_%"]
+    ) <= (100.0 - min_helper_pct)
+    
+    filtered_df = design_df[valid_mask].reset_index(drop=True)
+    
+    # Report filtering results
+    n_original = len(design_df)
+    n_filtered = len(filtered_df)
+    n_removed = n_original - n_filtered
+    
+    if n_removed > 0:
+        st.warning(
+            f"⚠️ **Design Space Constraint**: {n_removed} of {n_original} design points removed "
+            f"because Ionizable + Cholesterol + PEG > 100%. "
+            f"Remaining valid points: {n_filtered}"
+        )
+    
+    return filtered_df
 
 
 def generate_2level_factorial(ranges_dict):
@@ -624,26 +663,33 @@ if st.button("🚀 Generate DOE Design", type="primary", use_container_width=Tru
                 elif design_type == "Mixture Design":
                     design_df = generate_mixture_design(ranges)
                 
-                run_sheet = generate_run_sheet(
-                    design_df, num_replicates, num_blocks,
-                    mw_ionizable, mw_helper, mw_chol, mw_peg,
-                    conc_ionizable, conc_helper, conc_chol, conc_peg,
-                    dna_mass_ug=dna_mass_ug,
-                    dna_concentration=dna_concentration,
-                    ionizable_lipid_to_dna_ratio=ionizable_lipid_to_dna_ratio,
-                    aqueous_to_ethanol_ratio=aqueous_to_ethanol_ratio,
-                    ionizable_lipid_ratio=ionizable_lipid_ratio,
-                    helper_lipid_ratio=helper_lipid_ratio,
-                    cholesterol_ratio=cholesterol_ratio,
-                    pegdmg2000_ratio=pegdmg2000_ratio,
-                    amines_per_molecule=amines_per_molecule
-                )
+                # Filter invalid design points (where ratios sum > 100%)
+                design_df = filter_valid_design_points(design_df, min_helper_pct=0.5)
                 
-                st.session_state.design_df = design_df
-                st.session_state.run_sheet = run_sheet
-                st.session_state.design_type = design_type
-                
-                st.success(f"✅ {design_type} Design Generated: {len(design_df)} design points × {num_replicates} replicate(s) × {num_blocks} block(s) = {len(run_sheet)} total runs")
+                # Check if we have any valid points left
+                if len(design_df) == 0:
+                    st.error("❌ No valid design points found! The specified ratio ranges are too wide and conflict with the requirement that all ratios sum to 100%. Please adjust your ranges.")
+                else:
+                    run_sheet = generate_run_sheet(
+                        design_df, num_replicates, num_blocks,
+                        mw_ionizable, mw_helper, mw_chol, mw_peg,
+                        conc_ionizable, conc_helper, conc_chol, conc_peg,
+                        dna_mass_ug=dna_mass_ug,
+                        dna_concentration=dna_concentration,
+                        ionizable_lipid_to_dna_ratio=ionizable_lipid_to_dna_ratio,
+                        aqueous_to_ethanol_ratio=aqueous_to_ethanol_ratio,
+                        ionizable_lipid_ratio=ionizable_lipid_ratio,
+                        helper_lipid_ratio=helper_lipid_ratio,
+                        cholesterol_ratio=cholesterol_ratio,
+                        pegdmg2000_ratio=pegdmg2000_ratio,
+                        amines_per_molecule=amines_per_molecule
+                    )
+                    
+                    st.session_state.design_df = design_df
+                    st.session_state.run_sheet = run_sheet
+                    st.session_state.design_type = design_type
+                    
+                    st.success(f"✅ {design_type} Design Generated: {len(design_df)} design points × {num_replicates} replicate(s) × {num_blocks} block(s) = {len(run_sheet)} total runs")
                 
             except Exception as e:
                 st.error(f"❌ Error generating design: {str(e)}")
