@@ -21,6 +21,7 @@ st.markdown("---")
 # ============================================================================
 
 st.header("🧪 Component Database Configuration")
+st.subheader("Preset as Moderna SM-102 formulation")
 
 with st.expander("📦 Lipid Components Configuration", expanded=True):
     st.subheader("Lipid Component Properties")
