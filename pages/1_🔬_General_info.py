@@ -400,41 +400,95 @@ tab_calc1, tab_calc2, tab_calc3 = st.tabs(["N/P Ratio", "Volume Calculator", "Re
 # TAB 1: N/P RATIO CALCULATOR
 with tab_calc1:
     st.subheader("N/P Ratio Calculator")
-    st.markdown("Calculate N/P ratio from DNA/RNA mass and lipid dose.")
+    st.markdown("Calculate N/P ratio from nucleic acid mass and ionizable lipid parameters.")
+    
+    # Input mode selector
+    input_mode = st.radio("Lipid Input Method", ["Direct Moles (nmol)", "Mass + MW"], horizontal=True)
     
     with st.form("np_form"):
         col1, col2 = st.columns(2)
         
         with col1:
             st.markdown("**Nucleic Acid**")
-            na_type = st.selectbox("Nucleic Acid Type", ["pDNA (dsDNA)", "mRNA (ssRNA)"])
-            na_mass_ug = st.number_input("Mass (μg)", value=100.0, min_value=0.1, step=10.0)
+            na_type = st.selectbox("Type", ["pDNA (dsDNA)", "mRNA (ssRNA)"])
+            na_mass_ug = st.number_input("Mass (μg)", value=3.0, min_value=0.1, step=1.0, help="Nucleic acid mass in micrograms")
         
         with col2:
             st.markdown("**Ionizable Lipid**")
-            lipid_nmol = st.number_input("Lipid amount (nmol)", value=600.0, min_value=10.0, step=50.0)
-            amines_per_mol = st.number_input("Amines per molecule", value=1.0, min_value=1.0, step=1.0)
+            if input_mode == "Direct Moles (nmol)":
+                lipid_nmol = st.number_input("Lipid amount (nmol)", value=42.3, min_value=0.1, step=1.0, help="Direct input of ionizable lipid moles")
+            else:
+                lipid_mass_ug = st.number_input("Lipid mass (μg)", value=30.0, min_value=0.1, step=1.0, help="Ionizable lipid mass in micrograms")
+                lipid_mw = st.number_input("Molecular weight (g/mol)", value=710.18, min_value=100.0, step=10.0, help="MW of ionizable lipid (e.g., SM-102: 710.18)")
+            
+            amines_per_mol = st.number_input("Amines per molecule", value=1.0, min_value=1.0, step=1.0, help="Number of ionizable amine groups per lipid")
         
-        submit_np = st.form_submit_button("Calculate N/P Ratio")
+        submit_np = st.form_submit_button("📊 Calculate N/P Ratio")
     
     if submit_np:
-        # Phosphate calculation: P = mass(μg) / 330(μg/nmol) in nmol
-        # Note: 330 is average MW per nucleotide for both RNA and DNA (per phosphate)
+        # Calculate lipid moles if mass+MW mode
+        if input_mode == "Mass + MW":
+            # Convert μg to g, divide by MW to get mol, then convert to nmol
+            lipid_nmol = (lipid_mass_ug * 1e-6 / lipid_mw) * 1e9
+        
+        # Phosphate calculation: P = mass(μg) / 330 g/mol → nmol
+        # 330 is average MW per nucleotide for both RNA and DNA
         P_nmol = na_mass_ug / 330.0
         
-        # N/P ratio
+        # Nitrogen calculation
         N_nmol = lipid_nmol * amines_per_mol
+        
+        # N/P ratio
         np_ratio = N_nmol / P_nmol if P_nmol > 0 else 0
         
+        st.markdown("---")
         col_res1, col_res2, col_res3 = st.columns(3)
         with col_res1:
-            st.metric("N/P Ratio", f"{np_ratio:.2f}")
+            st.metric("N/P Ratio", f"{np_ratio:.2f}", help="Molar ratio of amine groups to phosphate groups")
         with col_res2:
-            st.metric("Phosphate (nmol)", f"{P_nmol:.1f}")
+            st.metric("N (Nitrogen, nmol)", f"{N_nmol:.2f}", help="Total amine groups from ionizable lipid")
         with col_res3:
-            st.metric("Nitrogen (nmol)", f"{N_nmol:.1f}")
+            st.metric("P (Phosphate, nmol)", f"{P_nmol:.2f}", help="Total phosphate groups from nucleic acid")
         
-        st.info(f"**Calculation Details:**\n- Nucleic Acid: {na_type}\n- Phosphate Moles = {na_mass_ug} μg / 330 g/mol = {P_nmol:.2f} nmol\n- Nitrogen Moles = {lipid_nmol} nmol × {amines_per_mol} = {N_nmol:.2f} nmol")
+        # Detailed calculation breakdown
+        with st.expander("📝 Calculation Details"):
+            st.markdown(f"""
+            **Nucleic Acid:** {na_type}
+            - Mass: {na_mass_ug} μg
+            - Phosphate moles: {na_mass_ug} μg ÷ 330 g/mol = **{P_nmol:.2f} nmol**
+            
+            **Ionizable Lipid:**
+            """)
+            if input_mode == "Mass + MW":
+                st.markdown(f"""
+                - Mass: {lipid_mass_ug} μg
+                - Molecular weight: {lipid_mw} g/mol
+                - Lipid moles: ({lipid_mass_ug} × 10⁻⁶ g) ÷ {lipid_mw} g/mol × 10⁹ = **{lipid_nmol:.2f} nmol**
+                - Amines per molecule: {amines_per_mol}
+                - Nitrogen moles: {lipid_nmol:.2f} nmol × {amines_per_mol} = **{N_nmol:.2f} nmol**
+                """)
+            else:
+                st.markdown(f"""
+                - Lipid moles: {lipid_nmol:.2f} nmol
+                - Amines per molecule: {amines_per_mol}
+                - Nitrogen moles: {lipid_nmol:.2f} nmol × {amines_per_mol} = **{N_nmol:.2f} nmol**
+                """)
+            
+            st.markdown(f"""
+            **N/P Ratio = {N_nmol:.2f} ÷ {P_nmol:.2f} = {np_ratio:.2f}**
+            """)
+            
+            # Interpretation
+            if na_type == "pDNA (dsDNA)":
+                if 4 <= np_ratio <= 10:
+                    st.success(f"✅ N/P ratio {np_ratio:.2f} is within typical pDNA range (4-10)")
+                else:
+                    st.warning(f"⚠️ N/P ratio {np_ratio:.2f} is outside typical pDNA range (4-10)")
+            else:  # mRNA
+                if 3 <= np_ratio <= 8:
+                    st.success(f"✅ N/P ratio {np_ratio:.2f} is within typical mRNA range (3-8)")
+                else:
+                    st.warning(f"⚠️ N/P ratio {np_ratio:.2f} is outside typical mRNA range (3-8)")
 
 # TAB 2: VOLUME CALCULATOR
 with tab_calc2:
