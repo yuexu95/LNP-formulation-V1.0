@@ -1010,6 +1010,15 @@ if "run_sheet" in st.session_state:
             xaxis_title="Ionizable Lipid (%)",
             yaxis_title="Cholesterol (%)",
             zaxis_title="PEG-Lipid (%)",
+            xaxis=dict(
+                range=[design_display["Ionizable_%"].min() - 2, design_display["Ionizable_%"].max() + 2]
+            ),
+            yaxis=dict(
+                range=[design_display["Cholesterol_%"].min() - 2, design_display["Cholesterol_%"].max() + 2]
+            ),
+            zaxis=dict(
+                range=[design_display["PEG_%"].min() - 2, design_display["PEG_%"].max() + 2]
+            ),
             camera=dict(
                 eye=dict(x=1.5, y=1.5, z=1.3)
             )
@@ -1042,10 +1051,17 @@ if "run_sheet" in st.session_state:
         colorbar=dict(title="Helper (%)")
     ))
     
+    # Set axis ranges based on Design Matrix data
     fig_hm.update_layout(
         title="Helper %: Ionizable% vs Cholesterol%",
         xaxis_title="Ionizable Lipid (%)",
         yaxis_title="Cholesterol (%)",
+        xaxis=dict(
+            range=[design_display["Ionizable_%"].min() - 2, design_display["Ionizable_%"].max() + 2]
+        ),
+        yaxis=dict(
+            range=[design_display["Cholesterol_%"].min() - 2, design_display["Cholesterol_%"].max() + 2]
+        ),
         height=400
     )
     
