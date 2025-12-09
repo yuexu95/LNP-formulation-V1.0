@@ -143,11 +143,11 @@ with tab_pdna:
     with col1:
         pdna_scale = st.number_input("DNA Scale (μg)", min_value=0.0, step=1.0, value=3.0, key="pdna_scale", help="Minimum DNA amount for each LNP formation is typically around 3 μg")
     with col2:
-        pdna_stock_conc = st.number_input("DNA Stock (μg/μL)", min_value=0.0, step=0.1, value=1.0, key="pdna_stock")
+        pdna_stock_conc = st.number_input("DNA Stock (μg/μL)", min_value=0.0, step=0.1, value=1.0, key="pdna_stock", help="Concentration of the DNA stock solution")
     with col3:
         pdna_ion_dna_ratio = st.number_input("Ionizable Lipid to DNA Ratio", min_value=0.0, step=1.0, value=10.0, key="pdna_ratio", help="10:1 is equivalent to N/P ~4-5 for pDNA")
     with col4:
-        pdna_aq_eth_ratio = st.number_input("Aqueous to Ethanol Ratio", min_value=0.0, step=0.1, value=3.0, key="pdna_aq_eth")
+        pdna_aq_eth_ratio = st.number_input("Aqueous to Ethanol Ratio", min_value=0.0, step=0.1, value=3.0, key="pdna_aq_eth", help="Common ratio is 3:1")
 
     col5, col6, col7, col8 = st.columns(4)
     with col5:
@@ -155,19 +155,19 @@ with tab_pdna:
     with col6:
         pdna_helper_mw = st.number_input("Helper Lipid MW (μg/μmol)", min_value=0.0, step=1.0, value=790.147, key="pdna_helper_mw", help="DSPC MW = 790.147")
     with col7:
-        pdna_chol_mw = st.number_input("Cholesterol MW (μg/μmol)", min_value=0.0, step=1.0, value=386.654, key="pdna_chol_mw")
+        pdna_chol_mw = st.number_input("Cholesterol MW (μg/μmol)", min_value=0.0, step=1.0, value=386.654, key="pdna_chol_mw", help="Cholesterol MW = 386.654")
     with col8:
-        pdna_peg_mw = st.number_input("PEG-DMG2000 MW (μg/μmol)", min_value=0.0, step=1.0, value=2509.2, key="pdna_peg_mw")
+        pdna_peg_mw = st.number_input("PEG-DMG2000 MW (μg/μmol)", min_value=0.0, step=1.0, value=2509.2, key="pdna_peg_mw", help="PEG-DMG2000 MW = 2509.2")
 
     col9, col10, col11, col12 = st.columns(4)
     with col9:
-        pdna_ion_conc = st.number_input("Ionizable Lipid Conc (μg/μL)", min_value=0.0, step=1.0, value=40.0, key="pdna_ion_conc")
+        pdna_ion_conc = st.number_input("Ionizable Lipid Conc (μg/μL)", min_value=0.0, step=1.0, value=40.0, key="pdna_ion_conc", help="Suggested ionizable lipid concentration is 40 μg/μL")
     with col10:
-        pdna_helper_conc = st.number_input("Helper Lipid Conc (μg/μL)", min_value=0.0, step=1.0, value=10.0, key="pdna_helper_conc")
+        pdna_helper_conc = st.number_input("Helper Lipid Conc (μg/μL)", min_value=0.0, step=1.0, value=10.0, key="pdna_helper_conc", help="Suggested helper lipid concentration is 10 μg/μL")
     with col11:
-        pdna_chol_conc = st.number_input("Cholesterol Conc (μg/μL)", min_value=0.0, step=1.0, value=10.0, key="pdna_chol_conc")
+        pdna_chol_conc = st.number_input("Cholesterol Conc (μg/μL)", min_value=0.0, step=1.0, value=10.0, key="pdna_chol_conc", help="Suggested cholesterol concentration is 10 μg/μL")
     with col12:
-        pdna_peg_conc = st.number_input("PEG-DMG2000 Conc (μg/μL)", min_value=0.0, step=1.0, value=10.0, key="pdna_peg_conc")
+        pdna_peg_conc = st.number_input("PEG-DMG2000 Conc (μg/μL)", min_value=0.0, step=1.0, value=10.0, key="pdna_peg_conc", help="Suggested PEG-DMG2000 concentration is 10 μg/μL")
     
     col13, col14, col15, col16 = st.columns(4)
     with col13:
@@ -181,9 +181,9 @@ with tab_pdna:
     
     col17, col18 = st.columns(2)
     with col17:
-        pdna_bulk_times = st.number_input("Bulk Preparation Times", min_value=1, step=1, value=1, key="pdna_bulk")
+        pdna_bulk_times = st.number_input("Bulk Preparation Times", min_value=1, step=1, value=1, key="pdna_bulk", help="Prepare extra volume for bulk LNP formulation")
     with col18:
-        pdna_amines = st.number_input("Amines per Ionizable Lipid", min_value=0.0, step=0.1, value=1.0, key="pdna_amines")
+        pdna_amines = st.number_input("Amines per Ionizable Lipid", min_value=0.0, step=0.1, value=1.0, key="pdna_amines", help="Number of ionizable tertiary amine groups per lipid molecule (default=1.0)")
     
     pdna_name = st.text_input("Formulation Name", value="", placeholder="Enter name for this pDNA formulation", key="pdna_name")
     
@@ -210,13 +210,18 @@ with tab_pdna:
             # Save to history
             record = {
                 "Name": pdna_name if pdna_name else "Unnamed",
-                "DNA (μg)": pdna_scale,
+                "DNA (μg)": f"{pdna_scale:.2f}",
                 "Ion Lipid (μL)": f"{pdna_volumes['Ionizable Lipid']:.2f}",
                 "Helper (μL)": f"{pdna_volumes['helper_lipid_volume']:.2f}",
                 "Cholesterol (μL)": f"{pdna_volumes['cholesterol_volume']:.2f}",
                 "PEG (μL)": f"{pdna_volumes['pegdmg2000_volume']:.2f}",
                 "Ethanol (μL)": f"{pdna_volumes['ethanol']:.2f}",
-                "N/P Ratio": f"{np_ratio:.3f}"
+                "N/P Ratio": f"{np_ratio:.3f}",
+                "Ion:DNA Ratio": f"{pdna_ion_dna_ratio:.1f}:1",
+                "Ion%": f"{pdna_ion_ratio:.1f}%",
+                "Helper%": f"{pdna_helper_ratio:.1f}%",
+                "Chol%": f"{pdna_chol_ratio:.1f}%",
+                "PEG%": f"{pdna_peg_ratio:.2f}%"
             }
             st.session_state.pdna_history.append(record)
             st.success(f"✅ pDNA formulation '{record['Name']}' calculated!")
@@ -239,24 +244,34 @@ with tab_pdna:
             st.metric("P (phosphate groups, μmol)", f"{p_moles:.4f}")
         
         st.caption("📌 For dsDNA: P = DNA mass (μg) / 330")
+        st.success("✅ Formulation saved to history below")
         
-        col1, col2, col3, col4 = st.columns(4)
-        
-        with col1:
-            st.markdown("**Single Batch**")
-            st.dataframe(st.session_state.pdna_result_df, use_container_width=True)
-        
-        with col3:
-            st.markdown(f"**Bulk ({pdna_bulk_times}×)**")
-            bulk_df = prepare_bulk_lnp_volumes(st.session_state.pdna_volumes, pdna_bulk_times)
-            st.dataframe(bulk_df, use_container_width=True)
-    
     # History display
     if len(st.session_state.pdna_history) > 0:
         st.markdown("---")
         st.subheader("📋 pDNA Formulation History")
         history_df = pd.DataFrame(st.session_state.pdna_history)
-        st.dataframe(history_df, use_container_width=True)
+        
+        # Display with full width and scrolling
+        st.dataframe(history_df, use_container_width=True, height=300)
+        
+        # Show detailed view option
+        with st.expander("📊 View Details"):
+            for idx, record in enumerate(st.session_state.pdna_history, 1):
+                st.markdown(f"**Entry {idx}: {record['Name']}**")
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.write(f"🧬 DNA: {record['DNA (μg)']} μg")
+                    st.write(f"⚗️ Ion Lipid: {record['Ion Lipid (μL)']} μL")
+                    st.write(f"🧪 Helper: {record['Helper (μL)']} μL")
+                    st.write(f"💊 Cholesterol: {record['Cholesterol (μL)']} μL")
+                    st.write(f"🔷 PEG: {record['PEG (μL)']} μL")
+                with col2:
+                    st.write(f"🌫️ Ethanol: {record['Ethanol (μL)']} μL")
+                    st.write(f"📈 N/P Ratio: {record['N/P Ratio']}")
+                    st.write(f"🔢 Ion:DNA: {record['Ion:DNA Ratio']}")
+                    st.write(f"📊 Composition - Ion: {record['Ion%']}, Helper: {record['Helper%']}, Chol: {record['Chol%']}, PEG: {record['PEG%']}")
+                st.divider()
         
         col_h1, col_h2 = st.columns(2)
         with col_h1:
@@ -295,11 +310,11 @@ with tab_mrna:
 
     col5, col6, col7, col8 = st.columns(4)
     with col5:
-        mrna_ion_mw = st.number_input("Ionizable Lipid MW (μg/μmol)", min_value=0.0, step=1.0, value=1000.0, key="mrna_ion_mw")
+        mrna_ion_mw = st.number_input("Ionizable Lipid MW (μg/μmol)", min_value=0.0, step=1.0, value=710.18, key="mrna_ion_mw")
     with col6:
-        mrna_helper_mw = st.number_input("Helper Lipid MW (μg/μmol)", min_value=0.0, step=1.0, value=744.034, key="mrna_helper_mw")
+        mrna_helper_mw = st.number_input("Helper Lipid MW (μg/μmol)", min_value=0.0, step=1.0, value=799.15, key="mrna_helper_mw")
     with col7:
-        mrna_chol_mw = st.number_input("Cholesterol MW (μg/μmol)", min_value=0.0, step=1.0, value=386.654, key="mrna_chol_mw")
+        mrna_chol_mw = st.number_input("Cholesterol MW (μg/μmol)", min_value=0.0, step=1.0, value=386.65, key="mrna_chol_mw")
     with col8:
         mrna_peg_mw = st.number_input("PEG-DMG2000 MW (μg/μmol)", min_value=0.0, step=1.0, value=2509.2, key="mrna_peg_mw")
 
@@ -354,13 +369,18 @@ with tab_mrna:
             # Save to history
             record = {
                 "Name": mrna_name if mrna_name else "Unnamed",
-                "RNA (μg)": mrna_scale,
+                "RNA (μg)": f"{mrna_scale:.2f}",
                 "Ion Lipid (μL)": f"{mrna_volumes['Ionizable Lipid']:.2f}",
                 "Helper (μL)": f"{mrna_volumes['helper_lipid_volume']:.2f}",
                 "Cholesterol (μL)": f"{mrna_volumes['cholesterol_volume']:.2f}",
                 "PEG (μL)": f"{mrna_volumes['pegdmg2000_volume']:.2f}",
                 "Ethanol (μL)": f"{mrna_volumes['ethanol']:.2f}",
-                "N/P Ratio": f"{np_ratio:.3f}"
+                "N/P Ratio": f"{np_ratio:.3f}",
+                "Ion:RNA Ratio": f"{mrna_ion_rna_ratio:.1f}:1",
+                "Ion%": f"{mrna_ion_ratio:.1f}%",
+                "Helper%": f"{mrna_helper_ratio:.1f}%",
+                "Chol%": f"{mrna_chol_ratio:.1f}%",
+                "PEG%": f"{mrna_peg_ratio:.2f}%"
             }
             st.session_state.mrna_history.append(record)
             st.success(f"✅ mRNA formulation '{record['Name']}' calculated!")
@@ -383,24 +403,34 @@ with tab_mrna:
             st.metric("P (phosphate groups, μmol)", f"{p_moles:.4f}")
         
         st.caption("📌 For mRNA: P = RNA mass (μg) / 330")
-        
-        col1, col2, col3, col4 = st.columns(4)
-        
-        with col1:
-            st.markdown("**Single Batch**")
-            st.dataframe(st.session_state.mrna_result_df, use_container_width=True)
-        
-        with col3:
-            st.markdown(f"**Bulk ({mrna_bulk_times}×)**")
-            bulk_df = prepare_bulk_lnp_volumes(st.session_state.mrna_volumes, mrna_bulk_times)
-            st.dataframe(bulk_df, use_container_width=True)
+        st.success("✅ Formulation saved to history below")
     
     # History display
     if len(st.session_state.mrna_history) > 0:
         st.markdown("---")
         st.subheader("📋 mRNA Formulation History")
         history_df = pd.DataFrame(st.session_state.mrna_history)
-        st.dataframe(history_df, use_container_width=True)
+        
+        # Display with full width and scrolling
+        st.dataframe(history_df, use_container_width=True, height=300)
+        
+        # Show detailed view option
+        with st.expander("📊 View Details"):
+            for idx, record in enumerate(st.session_state.mrna_history, 1):
+                st.markdown(f"**Entry {idx}: {record['Name']}**")
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.write(f"🧬 RNA: {record['RNA (μg)']} μg")
+                    st.write(f"⚗️ Ion Lipid: {record['Ion Lipid (μL)']} μL")
+                    st.write(f"🧪 Helper: {record['Helper (μL)']} μL")
+                    st.write(f"💊 Cholesterol: {record['Cholesterol (μL)']} μL")
+                    st.write(f"🔷 PEG: {record['PEG (μL)']} μL")
+                with col2:
+                    st.write(f"🌫️ Ethanol: {record['Ethanol (μL)']} μL")
+                    st.write(f"📈 N/P Ratio: {record['N/P Ratio']}")
+                    st.write(f"🔢 Ion:RNA: {record['Ion:RNA Ratio']}")
+                    st.write(f"📊 Composition - Ion: {record['Ion%']}, Helper: {record['Helper%']}, Chol: {record['Chol%']}, PEG: {record['PEG%']}")
+                st.divider()
         
         col_h1, col_h2 = st.columns(2)
         with col_h1:
