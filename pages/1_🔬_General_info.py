@@ -535,8 +535,8 @@ with tab_calc3:
         
         with col1:
             st.markdown("**Target Parameters**")
-            pdna_mass = st.number_input("pDNA required (μg)", value=100.0, min_value=10.0, step=10.0)
-            target_np_r = st.number_input("N/P Ratio", value=6.0, min_value=1.0, step=0.5)
+            pdna_mass = st.number_input("pDNA required (μg)", value=100.0, min_value=0.0, step=0.1)
+            target_np_r = st.number_input("N/P Ratio", value=4.0, min_value=1.0, step=1.0)
         
         with col2:
             st.markdown("**Molar Ratios (%)**")
