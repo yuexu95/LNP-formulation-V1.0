@@ -400,27 +400,31 @@ tab_calc1, tab_calc2, tab_calc3 = st.tabs(["N/P Ratio", "Volume Calculator", "Re
 # TAB 1: N/P RATIO CALCULATOR
 with tab_calc1:
     st.subheader("N/P Ratio Calculator")
-    st.markdown("Calculate N/P ratio from DNA mass and lipid dose.")
+    st.markdown("Calculate N/P ratio from DNA/RNA mass and lipid dose.")
     
     with st.form("np_form"):
         col1, col2 = st.columns(2)
         
         with col1:
             st.markdown("**Nucleic Acid**")
-            dna_mass_ug = st.number_input("DNA mass (μg)", value=100.0, min_value=0.1, step=10.0)
+            na_type = st.selectbox("Nucleic Acid Type", ["pDNA (dsDNA)", "mRNA (ssRNA)"])
+            na_mass_ug = st.number_input("Mass (μg)", value=100.0, min_value=0.1, step=10.0)
         
         with col2:
             st.markdown("**Ionizable Lipid**")
             lipid_nmol = st.number_input("Lipid amount (nmol)", value=600.0, min_value=10.0, step=50.0)
+            amines_per_mol = st.number_input("Amines per molecule", value=1.0, min_value=1.0, step=1.0)
         
         submit_np = st.form_submit_button("Calculate N/P Ratio")
     
     if submit_np:
         # Phosphate calculation: P = mass(μg) / 330(μg/nmol) in nmol
-        P_nmol = dna_mass_ug / 330.0
+        # Note: 330 is average MW per nucleotide for both RNA and DNA (per phosphate)
+        P_nmol = na_mass_ug / 330.0
         
-        # N/P ratio (assuming 1 amine per lipid molecule)
-        np_ratio = lipid_nmol / P_nmol if P_nmol > 0 else 0
+        # N/P ratio
+        N_nmol = lipid_nmol * amines_per_mol
+        np_ratio = N_nmol / P_nmol if P_nmol > 0 else 0
         
         col_res1, col_res2, col_res3 = st.columns(3)
         with col_res1:
@@ -428,7 +432,9 @@ with tab_calc1:
         with col_res2:
             st.metric("Phosphate (nmol)", f"{P_nmol:.1f}")
         with col_res3:
-            st.metric("Nitrogen (nmol)", f"{lipid_nmol:.1f}")
+            st.metric("Nitrogen (nmol)", f"{N_nmol:.1f}")
+        
+        st.info(f"**Calculation Details:**\n- Nucleic Acid: {na_type}\n- Phosphate Moles = {na_mass_ug} μg / 330 g/mol = {P_nmol:.2f} nmol\n- Nitrogen Moles = {lipid_nmol} nmol × {amines_per_mol} = {N_nmol:.2f} nmol")
 
 # TAB 2: VOLUME CALCULATOR
 with tab_calc2:
