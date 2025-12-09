@@ -1,0 +1,412 @@
+import streamlit as st
+import pandas as pd
+
+st.set_page_config(layout="wide")
+st.title("🧬 LNP Formulation Calculator (pDNA & mRNA)")
+
+# ============================================================================
+# SHARED FUNCTIONS
+# ============================================================================
+
+def calculate_np_ratio(nucleic_acid_mass_ug, ionizable_lipid_moles, amines_per_molecule=1.0):
+    """
+    Calculates the N/P ratio for LNP formulation (works for both pDNA and mRNA).
+    
+    Parameters:
+    - nucleic_acid_mass_ug: Mass of DNA/RNA in micrograms
+    - ionizable_lipid_moles: Moles of ionizable lipid (μmol)
+    - amines_per_molecule: Number of ionizable tertiary amine groups per lipid molecule (default=1.0)
+    
+    Returns:
+    - N/P ratio: Molar ratio of amine groups (N) to phosphate groups (P)
+    
+    Notes:
+    - For dsDNA: P (μmol) = DNA mass (μg) / 330
+    - For mRNA: P (μmol) = RNA mass (μg) / 330
+    """
+    nucleic_acid_mass_g = nucleic_acid_mass_ug * 1e-6
+    phosphate_moles_mol = nucleic_acid_mass_g / 330.0
+    phosphate_moles_umol = phosphate_moles_mol * 1e6
+    
+    amine_moles_umol = ionizable_lipid_moles * amines_per_molecule
+    
+    if phosphate_moles_umol > 0:
+        np_ratio = amine_moles_umol / phosphate_moles_umol
+    else:
+        np_ratio = 0
+    
+    return np_ratio, amine_moles_umol, phosphate_moles_umol
+
+def make_lnp_formulation(
+    nucleic_acid_scale, nucleic_acid_stock_concentration, ionizable_lipid_to_na_ratio, 
+    aqueous_to_ethanol_ratio, ionizable_lipid_mw, helper_lipid_mw, cholesterol_mw, 
+    pegdmg2000_mw, ionizable_lipid_concentration, helper_lipid_concentration, 
+    cholesterol_concentration, pegdmg2000_concentration, ionizable_lipid_ratio, 
+    helper_lipid_ratio, cholesterol_ratio, pegdmg2000_ratio, na_type="pDNA"
+):
+    """
+    Calculates the composition and prepares an LNP formulation (pDNA or mRNA).
+    """
+    ionizable_lipid_moles = (nucleic_acid_scale * ionizable_lipid_to_na_ratio) / ionizable_lipid_mw
+    
+    helper_lipid_moles = ionizable_lipid_moles * helper_lipid_ratio / ionizable_lipid_ratio
+    cholesterol_moles = ionizable_lipid_moles * cholesterol_ratio / ionizable_lipid_ratio
+    pegdmg2000_moles = ionizable_lipid_moles * pegdmg2000_ratio / ionizable_lipid_ratio
+
+    ionizable_lipid_mass = ionizable_lipid_moles * ionizable_lipid_mw
+    helper_lipid_mass = helper_lipid_moles * helper_lipid_mw
+    cholesterol_mass = cholesterol_moles * cholesterol_mw
+    pegdmg2000_mass = pegdmg2000_moles * pegdmg2000_mw
+
+    final_lnp_volume = nucleic_acid_scale / 0.1
+    
+    ionizable_lipid_volume = ionizable_lipid_mass / ionizable_lipid_concentration
+    helper_lipid_volume = helper_lipid_mass / helper_lipid_concentration
+    cholesterol_volume = cholesterol_mass / cholesterol_concentration
+    pegdmg2000_volume = pegdmg2000_mass / pegdmg2000_concentration
+    ethanol = final_lnp_volume / (aqueous_to_ethanol_ratio + 1) - ionizable_lipid_volume - helper_lipid_volume - cholesterol_volume - pegdmg2000_volume
+    ethanol_phase_volume = ionizable_lipid_volume + helper_lipid_volume + cholesterol_volume + pegdmg2000_volume + ethanol
+
+    aqueous_phase_volume = final_lnp_volume * (aqueous_to_ethanol_ratio / (aqueous_to_ethanol_ratio + 1))
+    nucleic_acid_volume = nucleic_acid_scale / nucleic_acid_stock_concentration
+    citrate_volume = 0.1 * aqueous_phase_volume
+    water_volume = aqueous_phase_volume - nucleic_acid_volume - citrate_volume
+
+    na_label = na_type
+    data = {
+        'Component': ['Ionizable Lipid', 'Helper Lipid', 'Cholesterol', 'PEG-DMG2000', 'Ethanol', na_label, 'Citrate', 'Water'],
+        'Volume (μL)': [ionizable_lipid_volume, helper_lipid_volume, cholesterol_volume, pegdmg2000_volume, ethanol, nucleic_acid_volume, citrate_volume, water_volume]
+    }
+
+    df = pd.DataFrame(data)
+    
+    volumes = {
+        "Ionizable Lipid": ionizable_lipid_volume,
+        "helper_lipid_volume": helper_lipid_volume,
+        "cholesterol_volume": cholesterol_volume,
+        "pegdmg2000_volume": pegdmg2000_volume,
+        "ethanol": ethanol,
+        "ethanol_phase_volume": ethanol_phase_volume,
+        "nucleic_acid_volume": nucleic_acid_volume,
+        "citrate_volume": citrate_volume,
+        "water_volume": water_volume,
+        "aqueous_volume": aqueous_phase_volume,
+        "ionizable_lipid_moles": ionizable_lipid_moles
+    }
+
+    return df, volumes
+
+def prepare_bulk_lnp_volumes(volumes, times):
+    """
+    Prepares the volumes for bulk LNP preparation with extra buffer.
+    """
+    get = lambda k: volumes.get(k, 0)
+    bulk_volumes = {
+        "Component": ['Ionizable Lipid', "Helper Lipid", "Cholesterol", "PEG-DMG2000", "Ethanol", "Nucleic Acid", "Citrate", "Water"],
+        "Volume (μL)": [
+            get("Ionizable Lipid") * times * 1.5,
+            get("helper_lipid_volume") * times * 1.5,
+            get("cholesterol_volume") * times * 1.5,
+            get("pegdmg2000_volume") * times * 1.5,
+            get("ethanol") * times * 1.5,
+            get("nucleic_acid_volume") * times * 1.2,
+            get("citrate_volume") * times * 1.2,
+            get("water_volume") * times * 1.2,
+        ]
+    } 
+    bulk_df = pd.DataFrame(bulk_volumes)
+    return bulk_df
+
+# ============================================================================
+# PAGE TABS
+# ============================================================================
+
+tab_pdna, tab_mrna = st.tabs(["🧬 pDNA Formulation", "〰️ mRNA Formulation"])
+
+# ============================================================================
+# TAB 1: pDNA FORMULATION
+# ============================================================================
+
+with tab_pdna:
+    st.header("pDNA LNP Formulation Calculator")
+    
+    # Initialize session state for pDNA
+    if "pdna_result_df" not in st.session_state:
+        st.session_state.pdna_result_df = None
+        st.session_state.pdna_volumes = None
+        st.session_state.pdna_history = []
+    
+    # Input section
+    st.subheader("📋 pDNA Formulation Parameters")
+    
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        pdna_scale = st.number_input("DNA Scale (μg)", min_value=0.0, step=1.0, value=3.0, key="pdna_scale", help="Minimum DNA amount for each LNP formation is typically around 3 μg")
+    with col2:
+        pdna_stock_conc = st.number_input("DNA Stock (μg/μL)", min_value=0.0, step=0.1, value=1.0, key="pdna_stock")
+    with col3:
+        pdna_ion_dna_ratio = st.number_input("Ionizable Lipid to DNA Ratio", min_value=0.0, step=1.0, value=10.0, key="pdna_ratio", help="10:1 is equivalent to N/P ~4-5 for pDNA")
+    with col4:
+        pdna_aq_eth_ratio = st.number_input("Aqueous to Ethanol Ratio", min_value=0.0, step=0.1, value=3.0, key="pdna_aq_eth")
+
+    col5, col6, col7, col8 = st.columns(4)
+    with col5:
+        pdna_ion_mw = st.number_input("Ionizable Lipid MW (μg/μmol)", min_value=0.0, step=1.0, value=710.182, key="pdna_ion_mw", help="SM-102 MW = 710.182")
+    with col6:
+        pdna_helper_mw = st.number_input("Helper Lipid MW (μg/μmol)", min_value=0.0, step=1.0, value=790.147, key="pdna_helper_mw", help="DSPC MW = 790.147")
+    with col7:
+        pdna_chol_mw = st.number_input("Cholesterol MW (μg/μmol)", min_value=0.0, step=1.0, value=386.654, key="pdna_chol_mw")
+    with col8:
+        pdna_peg_mw = st.number_input("PEG-DMG2000 MW (μg/μmol)", min_value=0.0, step=1.0, value=2509.2, key="pdna_peg_mw")
+
+    col9, col10, col11, col12 = st.columns(4)
+    with col9:
+        pdna_ion_conc = st.number_input("Ionizable Lipid Conc (μg/μL)", min_value=0.0, step=1.0, value=40.0, key="pdna_ion_conc")
+    with col10:
+        pdna_helper_conc = st.number_input("Helper Lipid Conc (μg/μL)", min_value=0.0, step=1.0, value=10.0, key="pdna_helper_conc")
+    with col11:
+        pdna_chol_conc = st.number_input("Cholesterol Conc (μg/μL)", min_value=0.0, step=1.0, value=10.0, key="pdna_chol_conc")
+    with col12:
+        pdna_peg_conc = st.number_input("PEG-DMG2000 Conc (μg/μL)", min_value=0.0, step=1.0, value=10.0, key="pdna_peg_conc")
+    
+    col13, col14, col15, col16 = st.columns(4)
+    with col13:
+        pdna_ion_ratio = st.number_input("Ionizable Lipid Molar % ", min_value=0.0, step=1.0, value=50.0, key="pdna_ion_ratio")
+    with col14:
+        pdna_helper_ratio = st.number_input("Helper Lipid Molar %", min_value=0.0, step=1.0, value=10.0, key="pdna_helper_ratio")
+    with col15:
+        pdna_chol_ratio = st.number_input("Cholesterol Molar %", min_value=0.0, step=0.5, value=38.5, key="pdna_chol_ratio")
+    with col16:
+        pdna_peg_ratio = st.number_input("PEG-DMG2000 Molar %", min_value=0.0, step=0.1, value=1.5, key="pdna_peg_ratio")
+    
+    col17, col18 = st.columns(2)
+    with col17:
+        pdna_bulk_times = st.number_input("Bulk Preparation Times", min_value=1, step=1, value=1, key="pdna_bulk")
+    with col18:
+        pdna_amines = st.number_input("Amines per Ionizable Lipid", min_value=0.0, step=0.1, value=1.0, key="pdna_amines")
+    
+    pdna_name = st.text_input("Formulation Name", value="", placeholder="Enter name for this pDNA formulation", key="pdna_name")
+    
+    # Calculate button
+    if st.button("📊 Calculate pDNA Formulation", key="pdna_calc_btn"):
+        if pdna_stock_conc <= 0 or pdna_ion_mw <= 0 or pdna_ion_conc <= 0:
+            st.error("All concentrations and MWs must be positive values!")
+        else:
+            pdna_result_df, pdna_volumes = make_lnp_formulation(
+                pdna_scale, pdna_stock_conc, pdna_ion_dna_ratio, pdna_aq_eth_ratio,
+                pdna_ion_mw, pdna_helper_mw, pdna_chol_mw, pdna_peg_mw,
+                pdna_ion_conc, pdna_helper_conc, pdna_chol_conc, pdna_peg_conc,
+                pdna_ion_ratio, pdna_helper_ratio, pdna_chol_ratio, pdna_peg_ratio,
+                na_type="pDNA"
+            )
+            st.session_state.pdna_result_df = pdna_result_df
+            st.session_state.pdna_volumes = pdna_volumes
+            
+            # Calculate N/P ratio
+            np_ratio, n_moles, p_moles = calculate_np_ratio(
+                pdna_scale, pdna_volumes["ionizable_lipid_moles"], pdna_amines
+            )
+            
+            # Save to history
+            record = {
+                "Name": pdna_name if pdna_name else "Unnamed",
+                "DNA (μg)": pdna_scale,
+                "Ion Lipid (μL)": f"{pdna_volumes['Ionizable Lipid']:.2f}",
+                "Helper (μL)": f"{pdna_volumes['helper_lipid_volume']:.2f}",
+                "Cholesterol (μL)": f"{pdna_volumes['cholesterol_volume']:.2f}",
+                "PEG (μL)": f"{pdna_volumes['pegdmg2000_volume']:.2f}",
+                "Ethanol (μL)": f"{pdna_volumes['ethanol']:.2f}",
+                "N/P Ratio": f"{np_ratio:.3f}"
+            }
+            st.session_state.pdna_history.append(record)
+            st.success(f"✅ pDNA formulation '{record['Name']}' calculated!")
+    
+    # Results display
+    if st.session_state.pdna_result_df is not None:
+        st.markdown("---")
+        st.subheader("📊 pDNA Formulation Results")
+        
+        np_ratio, n_moles, p_moles = calculate_np_ratio(
+            pdna_scale, st.session_state.pdna_volumes["ionizable_lipid_moles"], pdna_amines
+        )
+        
+        metric_col1, metric_col2, metric_col3 = st.columns(3)
+        with metric_col1:
+            st.metric("N/P Ratio", f"{np_ratio:.3f}")
+        with metric_col2:
+            st.metric("N (amine groups, μmol)", f"{n_moles:.4f}")
+        with metric_col3:
+            st.metric("P (phosphate groups, μmol)", f"{p_moles:.4f}")
+        
+        st.caption("📌 For dsDNA: P = DNA mass (μg) / 330")
+        
+        col1, col2, col3, col4 = st.columns(4)
+        
+        with col1:
+            st.markdown("**Single Batch**")
+            st.dataframe(st.session_state.pdna_result_df, use_container_width=True)
+        
+        with col3:
+            st.markdown(f"**Bulk ({pdna_bulk_times}×)**")
+            bulk_df = prepare_bulk_lnp_volumes(st.session_state.pdna_volumes, pdna_bulk_times)
+            st.dataframe(bulk_df, use_container_width=True)
+    
+    # History display
+    if len(st.session_state.pdna_history) > 0:
+        st.markdown("---")
+        st.subheader("📋 pDNA Formulation History")
+        history_df = pd.DataFrame(st.session_state.pdna_history)
+        st.dataframe(history_df, use_container_width=True)
+        
+        col_h1, col_h2 = st.columns(2)
+        with col_h1:
+            csv_data = history_df.to_csv(index=False)
+            st.download_button("📥 Download pDNA History (CSV)", csv_data, file_name="pdna_history.csv", mime="text/csv", key="pdna_download")
+        with col_h2:
+            if st.button("🗑️ Clear pDNA History", key="pdna_clear"):
+                st.session_state.pdna_history = []
+                st.rerun()
+
+# ============================================================================
+# TAB 2: mRNA FORMULATION
+# ============================================================================
+
+with tab_mrna:
+    st.header("mRNA LNP Formulation Calculator")
+    
+    # Initialize session state for mRNA
+    if "mrna_result_df" not in st.session_state:
+        st.session_state.mrna_result_df = None
+        st.session_state.mrna_volumes = None
+        st.session_state.mrna_history = []
+    
+    # Input section
+    st.subheader("📋 mRNA Formulation Parameters")
+    
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        mrna_scale = st.number_input("RNA Scale (μg)", min_value=0.0, step=1.0, value=3.0, key="mrna_scale")
+    with col2:
+        mrna_stock_conc = st.number_input("RNA Stock (μg/μL)", min_value=0.0, step=0.1, value=1.0, key="mrna_stock")
+    with col3:
+        mrna_ion_rna_ratio = st.number_input("Ionizable Lipid to RNA Ratio", min_value=0.0, step=0.1, value=10.0, key="mrna_ratio")
+    with col4:
+        mrna_aq_eth_ratio = st.number_input("Aqueous to Ethanol Ratio", min_value=0.0, step=0.1, value=3.0, key="mrna_aq_eth")
+
+    col5, col6, col7, col8 = st.columns(4)
+    with col5:
+        mrna_ion_mw = st.number_input("Ionizable Lipid MW (μg/μmol)", min_value=0.0, step=1.0, value=1000.0, key="mrna_ion_mw")
+    with col6:
+        mrna_helper_mw = st.number_input("Helper Lipid MW (μg/μmol)", min_value=0.0, step=1.0, value=744.034, key="mrna_helper_mw")
+    with col7:
+        mrna_chol_mw = st.number_input("Cholesterol MW (μg/μmol)", min_value=0.0, step=1.0, value=386.654, key="mrna_chol_mw")
+    with col8:
+        mrna_peg_mw = st.number_input("PEG-DMG2000 MW (μg/μmol)", min_value=0.0, step=1.0, value=2509.2, key="mrna_peg_mw")
+
+    col9, col10, col11, col12 = st.columns(4)
+    with col9:
+        mrna_ion_conc = st.number_input("Ionizable Lipid Conc (μg/μL)", min_value=0.0, step=0.1, value=40.0, key="mrna_ion_conc")
+    with col10:
+        mrna_helper_conc = st.number_input("Helper Lipid Conc (μg/μL)", min_value=0.0, step=0.1, value=10.0, key="mrna_helper_conc")
+    with col11:
+        mrna_chol_conc = st.number_input("Cholesterol Conc (μg/μL)", min_value=0.0, step=0.1, value=10.0, key="mrna_chol_conc")
+    with col12:
+        mrna_peg_conc = st.number_input("PEG-DMG2000 Conc (μg/μL)", min_value=0.0, step=0.1, value=10.0, key="mrna_peg_conc")
+    
+    col13, col14, col15, col16 = st.columns(4)
+    with col13:
+        mrna_ion_ratio = st.number_input("Ionizable Lipid Molar %", min_value=0.0, step=0.1, value=35.0, key="mrna_ion_ratio")
+    with col14:
+        mrna_helper_ratio = st.number_input("Helper Lipid Molar %", min_value=0.0, step=0.1, value=16.0, key="mrna_helper_ratio")
+    with col15:
+        mrna_chol_ratio = st.number_input("Cholesterol Molar %", min_value=0.0, step=0.1, value=46.5, key="mrna_chol_ratio")
+    with col16:
+        mrna_peg_ratio = st.number_input("PEG-DMG2000 Molar %", min_value=0.0, step=0.1, value=2.5, key="mrna_peg_ratio")
+    
+    col17, col18 = st.columns(2)
+    with col17:
+        mrna_bulk_times = st.number_input("Bulk Preparation Times", min_value=1, step=1, value=1, key="mrna_bulk")
+    with col18:
+        mrna_amines = st.number_input("Amines per Ionizable Lipid", min_value=0.0, step=0.1, value=1.0, key="mrna_amines")
+    
+    mrna_name = st.text_input("Formulation Name", value="", placeholder="Enter name for this mRNA formulation", key="mrna_name")
+    
+    # Calculate button
+    if st.button("📊 Calculate mRNA Formulation", key="mrna_calc_btn"):
+        if mrna_stock_conc <= 0 or mrna_ion_mw <= 0 or mrna_ion_conc <= 0:
+            st.error("All concentrations and MWs must be positive values!")
+        else:
+            mrna_result_df, mrna_volumes = make_lnp_formulation(
+                mrna_scale, mrna_stock_conc, mrna_ion_rna_ratio, mrna_aq_eth_ratio,
+                mrna_ion_mw, mrna_helper_mw, mrna_chol_mw, mrna_peg_mw,
+                mrna_ion_conc, mrna_helper_conc, mrna_chol_conc, mrna_peg_conc,
+                mrna_ion_ratio, mrna_helper_ratio, mrna_chol_ratio, mrna_peg_ratio,
+                na_type="mRNA"
+            )
+            st.session_state.mrna_result_df = mrna_result_df
+            st.session_state.mrna_volumes = mrna_volumes
+            
+            # Calculate N/P ratio
+            np_ratio, n_moles, p_moles = calculate_np_ratio(
+                mrna_scale, mrna_volumes["ionizable_lipid_moles"], mrna_amines
+            )
+            
+            # Save to history
+            record = {
+                "Name": mrna_name if mrna_name else "Unnamed",
+                "RNA (μg)": mrna_scale,
+                "Ion Lipid (μL)": f"{mrna_volumes['Ionizable Lipid']:.2f}",
+                "Helper (μL)": f"{mrna_volumes['helper_lipid_volume']:.2f}",
+                "Cholesterol (μL)": f"{mrna_volumes['cholesterol_volume']:.2f}",
+                "PEG (μL)": f"{mrna_volumes['pegdmg2000_volume']:.2f}",
+                "Ethanol (μL)": f"{mrna_volumes['ethanol']:.2f}",
+                "N/P Ratio": f"{np_ratio:.3f}"
+            }
+            st.session_state.mrna_history.append(record)
+            st.success(f"✅ mRNA formulation '{record['Name']}' calculated!")
+    
+    # Results display
+    if st.session_state.mrna_result_df is not None:
+        st.markdown("---")
+        st.subheader("📊 mRNA Formulation Results")
+        
+        np_ratio, n_moles, p_moles = calculate_np_ratio(
+            mrna_scale, st.session_state.mrna_volumes["ionizable_lipid_moles"], mrna_amines
+        )
+        
+        metric_col1, metric_col2, metric_col3 = st.columns(3)
+        with metric_col1:
+            st.metric("N/P Ratio", f"{np_ratio:.3f}")
+        with metric_col2:
+            st.metric("N (amine groups, μmol)", f"{n_moles:.4f}")
+        with metric_col3:
+            st.metric("P (phosphate groups, μmol)", f"{p_moles:.4f}")
+        
+        st.caption("📌 For mRNA: P = RNA mass (μg) / 330")
+        
+        col1, col2, col3, col4 = st.columns(4)
+        
+        with col1:
+            st.markdown("**Single Batch**")
+            st.dataframe(st.session_state.mrna_result_df, use_container_width=True)
+        
+        with col3:
+            st.markdown(f"**Bulk ({mrna_bulk_times}×)**")
+            bulk_df = prepare_bulk_lnp_volumes(st.session_state.mrna_volumes, mrna_bulk_times)
+            st.dataframe(bulk_df, use_container_width=True)
+    
+    # History display
+    if len(st.session_state.mrna_history) > 0:
+        st.markdown("---")
+        st.subheader("📋 mRNA Formulation History")
+        history_df = pd.DataFrame(st.session_state.mrna_history)
+        st.dataframe(history_df, use_container_width=True)
+        
+        col_h1, col_h2 = st.columns(2)
+        with col_h1:
+            csv_data = history_df.to_csv(index=False)
+            st.download_button("📥 Download mRNA History (CSV)", csv_data, file_name="mrna_history.csv", mime="text/csv", key="mrna_download")
+        with col_h2:
+            if st.button("🗑️ Clear mRNA History", key="mrna_clear"):
+                st.session_state.mrna_history = []
+                st.rerun()
