@@ -547,10 +547,10 @@ with tab_calc3:
         
         with col3:
             st.markdown("**Stock Concentrations (mg/mL)**")
-            c_ion = st.number_input("Ion stock", value=10.0, min_value=1.0, step=1.0)
-            c_chol = st.number_input("Chol stock", value=10.0, min_value=1.0, step=1.0)
-            c_helper = st.number_input("Helper stock", value=10.0, min_value=1.0, step=1.0)
-            c_peg = st.number_input("PEG stock", value=5.0, min_value=1.0, step=1.0)
+            c_ion = st.number_input("Ion stock", value=10.0, min_value=1.0, step=0.5)
+            c_chol = st.number_input("Chol stock", value=10.0, min_value=1.0, step=0.5)
+            c_helper = st.number_input("Helper stock", value=10.0, min_value=1.0, step=0.5)
+            c_peg = st.number_input("PEG stock", value=5.0, min_value=1.0, step=0.1)
         
         submit_recipe = st.form_submit_button("Generate Recipe")
     
