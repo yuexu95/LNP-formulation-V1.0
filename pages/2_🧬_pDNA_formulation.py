@@ -134,7 +134,7 @@ def main():
     with col2:
         dna_stock_concentration = st.number_input("DNA Stock (μg/μL)", min_value=0.0, step=0.1, value=1.0)
     with col3:
-        ionizable_lipid_to_dna_ratio = st.number_input("Ionizable Lipid to DNA Ratio", min_value=0.0, step=1.0, value=10.0)
+        ionizable_lipid_to_dna_ratio = st.number_input("Ionizable Lipid to DNA Ratio", min_value=0.0, step=1.0, value=10.0, help="Mass ratio of ionizable lipid to DNA 10:1 is equivalent to N/P ~4-5 for pDNA")
     with col4:
         aqueous_to_ethanol_ratio = st.number_input("Aqueous to Ethanol Ratio", min_value=0.0, step=0.1, value=3.0)
 
