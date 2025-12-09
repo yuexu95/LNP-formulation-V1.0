@@ -834,20 +834,39 @@ if st.button("🚀 Generate DOE Design & Run Sheet", type="primary", use_contain
                     amines_per_molecule=amines_per_molecule
                 )
                 
-                st.session_state.design_df = design_df
-                st.session_state.run_sheet = run_sheet
-                st.session_state.design_type = design_type
-                st.session_state.response_variable = response_variable
-                st.session_state.doe_objective = objective
-                st.session_state.num_replicates = num_replicates
-                st.session_state.num_blocks = num_blocks
+                # Check for negative Ethanol volumes
+                invalid_runs = run_sheet[run_sheet['Ethanol_Vol_uL'] < 0]
+                valid_run_sheet = run_sheet[run_sheet['Ethanol_Vol_uL'] >= 0].copy()
                 
-                st.success(f"""✅ **Design Generated Successfully!**
+                if len(invalid_runs) > 0:
+                    st.warning(f"⚠️ **WARNING: {len(invalid_runs)} experimental runs have NEGATIVE Ethanol volume!**\n\nThese runs are INVALID and will be ignored:\n")
+                    invalid_summary = invalid_runs[['Run_ID', 'Experiment', 'Ionizable_%', 'Cholesterol_%', 'PEG_%', 'Ethanol_Vol_uL']].copy()
+                    st.dataframe(invalid_summary, use_container_width=True, hide_index=True)
+                    st.info("💡 **Cause**: The combination of high lipid concentrations and/or high Ion:DNA ratio requires too much ethanol, exceeding available space. Consider:\n- Reducing Ion:DNA ratio\n- Using lower lipid percentages\n- Increasing final LNP volume (dna_mass_ug)\n- Adjusting aqueous:ethanol ratio")
                 
-**Design Matrix**: {len(design_df)} unique design points
+                # Store the valid design points for visualization
+                if len(valid_run_sheet) > 0:
+                    # Get unique design points that are valid
+                    valid_design_experiments = valid_run_sheet['Experiment'].unique()
+                    valid_design_df = design_df[design_df.index.isin(valid_design_experiments - 1)].copy()
+                    
+                    st.session_state.design_df = valid_design_df
+                    st.session_state.run_sheet = valid_run_sheet
+                    st.session_state.design_type = design_type
+                    st.session_state.response_variable = response_variable
+                    st.session_state.doe_objective = objective
+                    st.session_state.num_replicates = num_replicates
+                    st.session_state.num_blocks = num_blocks
+                    
+                    st.success(f"""✅ **Design Generated Successfully!**
+                    
+**Original Design Points**: {len(design_df)}
+**Valid Design Points**: {len(valid_design_df)} (after filtering negative ethanol)
 **Replicates**: {num_replicates} × **Blocks**: {num_blocks}
-**Total Runs**: {len(run_sheet)} experimental runs
+**Total Valid Runs**: {len(valid_run_sheet)} experimental runs
 """)
+                else:
+                    st.error("❌ No valid experimental runs! All runs have negative Ethanol volume. Please adjust parameters.")
             
         except Exception as e:
             st.error(f"❌ Error generating design: {str(e)}")
@@ -957,10 +976,9 @@ if "run_sheet" in st.session_state:
     
     st.subheader("📊 Design Space Visualization")
     
-    # Get unique design points only (for visualization, not run sheet)
-    design_for_viz = design_display.drop_duplicates(
-        subset=["Ionizable_%", "Cholesterol_%", "PEG_%"]
-    ).reset_index(drop=True)
+    # Get design points from design_display (which corresponds to valid design_df)
+    # This ensures 3D visualization matches the actual Design Matrix
+    design_for_viz = design_display.copy()
     
     # 3D Molar Ratio Space: Ionizable vs Cholesterol vs PEG
     fig3d_molar = go.Figure(data=[go.Scatter3d(
@@ -1079,6 +1097,293 @@ if "run_sheet" in st.session_state:
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             use_container_width=True
         )
+    
+    # ========================================================================
+    # DATA INPUT & ANALYSIS SECTION
+    # ========================================================================
+    
+    st.markdown("---")
+    st.subheader("📈 Data Input & Statistical Analysis")
+    
+    with st.expander("📊 Enter Experimental Results & Analyze", expanded=True):
+        st.markdown(f"**Response Variable:** {response_variable}")
+        st.markdown("Enter the measured outcome values for each experimental run below:")
+        
+        # Create data input interface
+        col_input_info, col_input_upload = st.columns([2, 1])
+        
+        with col_input_info:
+            st.info("💡 You can either manually enter values row-by-row, or upload a CSV file with results")
+        
+        with col_input_upload:
+            uploaded_file = st.file_uploader(
+                "Upload results CSV (with 'Response' column)",
+                type=['csv'],
+                key='result_upload'
+            )
+        
+        # Initialize or load response data
+        if "response_data" not in st.session_state:
+            st.session_state.response_data = pd.DataFrame({
+                'Run': range(1, len(run_sheet) + 1),
+                'Response': [None] * len(run_sheet)
+            })
+        
+        # Process uploaded file
+        if uploaded_file is not None:
+            try:
+                uploaded_df = pd.read_csv(uploaded_file)
+                if 'Response' in uploaded_df.columns:
+                    st.session_state.response_data['Response'] = uploaded_df['Response'].values[:len(run_sheet)]
+                    st.success("✅ Data loaded successfully!")
+            except Exception as e:
+                st.error(f"Error loading file: {e}")
+        
+        # Manual data input using editable dataframe
+        st.write("**Enter Response Values:**")
+        response_df = st.data_editor(
+            st.session_state.response_data,
+            use_container_width=True,
+            key='response_editor',
+            hide_index=True,
+            num_rows="fixed"
+        )
+        
+        # Store the response data
+        st.session_state.response_data = response_df
+        
+        # Count non-null responses
+        valid_responses = response_df['Response'].dropna()
+        st.info(f"📌 {len(valid_responses)}/{len(run_sheet)} runs have response values entered")
+        
+        # Analysis button
+        col_analyze1, col_analyze2 = st.columns([1, 1])
+        
+        with col_analyze1:
+            analyze_button = st.button("🔍 Perform Statistical Analysis", use_container_width=True)
+        
+        with col_analyze2:
+            export_results = st.button("💾 Export Analysis Results", use_container_width=True)
+        
+        # Perform analysis if button clicked and we have data
+        if analyze_button and len(valid_responses) > 0:
+            st.markdown("---")
+            st.subheader("📊 Analysis Results")
+            
+            # Basic statistics
+            col_stat1, col_stat2, col_stat3, col_stat4 = st.columns(4)
+            
+            with col_stat1:
+                st.metric("Mean Response", f"{valid_responses.mean():.2f}")
+            with col_stat2:
+                st.metric("Std Deviation", f"{valid_responses.std():.2f}")
+            with col_stat3:
+                st.metric("Min Response", f"{valid_responses.min():.2f}")
+            with col_stat4:
+                st.metric("Max Response", f"{valid_responses.max():.2f}")
+            
+            # Merge response data with design data
+            analysis_data = run_sheet.copy()
+            analysis_data['Response'] = valid_responses.values
+            
+            st.markdown("---")
+            st.write("**Run Sheet with Response Values:**")
+            st.dataframe(
+                analysis_data[['Run', 'Ionizable_%', 'Cholesterol_%', 'PEG_%', 'Ion_DNA_Ratio', 'NP_Ratio', 'Response']],
+                use_container_width=True,
+                height=300
+            )
+            
+            # Calculate main effects for each factor
+            st.markdown("---")
+            st.subheader("🎯 Main Effects Analysis")
+            
+            col_effect1, col_effect2, col_effect3 = st.columns(3)
+            
+            # Find which factors are in the design
+            factors_to_analyze = []
+            if study_ionizable:
+                factors_to_analyze.append(('Ionizable_%', 'Ionizable Lipid %'))
+            if study_cholesterol:
+                factors_to_analyze.append(('Cholesterol_%', 'Cholesterol %'))
+            if study_peg:
+                factors_to_analyze.append(('PEG_%', 'PEG-Lipid %'))
+            if study_ion_dna:
+                factors_to_analyze.append(('Ion_DNA_Ratio', 'Ion:DNA Ratio'))
+            
+            # Calculate effect for each factor (difference between high and low levels)
+            effects_dict = {}
+            for col_name, display_name in factors_to_analyze:
+                if col_name in analysis_data.columns:
+                    # Get quartiles to separate high vs low
+                    Q1 = analysis_data[col_name].quantile(0.25)
+                    Q3 = analysis_data[col_name].quantile(0.75)
+                    
+                    low_resp = analysis_data[analysis_data[col_name] <= Q1]['Response'].mean()
+                    high_resp = analysis_data[analysis_data[col_name] >= Q3]['Response'].mean()
+                    
+                    effect = high_resp - low_resp
+                    effects_dict[display_name] = {
+                        'effect': effect,
+                        'low_mean': low_resp,
+                        'high_mean': high_resp
+                    }
+            
+            # Display main effects as a bar chart
+            if effects_dict:
+                effects_values = [abs(v['effect']) for v in effects_dict.values()]
+                effects_names = list(effects_dict.keys())
+                
+                fig_effects = go.Figure(data=[
+                    go.Bar(
+                        x=effects_names,
+                        y=effects_values,
+                        marker=dict(
+                            color=effects_values,
+                            colorscale='RdYlGn',
+                            showscale=True,
+                            colorbar=dict(title="Effect\nMagnitude")
+                        ),
+                        text=[f"{v:.2f}" for v in effects_values],
+                        textposition='auto'
+                    )
+                ])
+                
+                fig_effects.update_layout(
+                    title="Factor Effects on Response (|High - Low|)",
+                    xaxis_title="Factor",
+                    yaxis_title="Effect Magnitude",
+                    height=400,
+                    showlegend=False
+                )
+                
+                st.plotly_chart(fig_effects, use_container_width=True)
+                
+                # Print effects table
+                effects_table_data = []
+                for factor_name, effect_data in effects_dict.items():
+                    effects_table_data.append({
+                        'Factor': factor_name,
+                        'Low Level Mean': f"{effect_data['low_mean']:.2f}",
+                        'High Level Mean': f"{effect_data['high_mean']:.2f}",
+                        'Effect': f"{effect_data['effect']:.2f}"
+                    })
+                
+                st.dataframe(
+                    pd.DataFrame(effects_table_data),
+                    use_container_width=True
+                )
+            
+            # 3D Response Surface Plot
+            st.markdown("---")
+            st.subheader("🔮 3D Response Surface Visualization")
+            
+            # Create 3D scatter plot with response as color
+            fig3d_response = go.Figure(data=[go.Scatter3d(
+                x=analysis_data['Ionizable_%'],
+                y=analysis_data['Cholesterol_%'],
+                z=analysis_data['PEG_%'],
+                mode='markers',
+                marker=dict(
+                    size=6,
+                    color=valid_responses.values,  # Color by response value
+                    colorscale='Viridis',
+                    showscale=True,
+                    colorbar=dict(title=response_variable, x=1.1),
+                    line=dict(width=1, color='white'),
+                    opacity=0.85
+                ),
+                text=[f"Ion: {i:.1f}%<br>Chol: {c:.1f}%<br>PEG: {p:.1f}%<br>{response_variable}: {r:.2f}" 
+                      for i, c, p, r in zip(analysis_data['Ionizable_%'], 
+                                           analysis_data['Cholesterol_%'],
+                                           analysis_data['PEG_%'],
+                                           valid_responses.values)],
+                hoverinfo='text',
+                name='Experimental Results'
+            )])
+            
+            fig3d_response.update_layout(
+                title=f"3D Response Surface - {response_variable}",
+                scene=dict(
+                    xaxis_title="Ionizable Lipid (%)",
+                    yaxis_title="Cholesterol (%)",
+                    zaxis_title="PEG-Lipid (%)",
+                    camera=dict(eye=dict(x=1.5, y=1.5, z=1.3))
+                ),
+                height=600,
+                hovermode='closest'
+            )
+            
+            st.plotly_chart(fig3d_response, use_container_width=True)
+            
+            # 2D Response Heatmap for each factor pair
+            st.markdown("---")
+            st.subheader("🔥 2D Response Heatmaps")
+            
+            heatmap_pairs = []
+            if study_ionizable and study_cholesterol:
+                heatmap_pairs.append(('Ionizable_%', 'Cholesterol_%', 'Ionizable % vs Cholesterol %'))
+            if study_ionizable and study_peg:
+                heatmap_pairs.append(('Ionizable_%', 'PEG_%', 'Ionizable % vs PEG %'))
+            if study_ionizable and study_ion_dna:
+                heatmap_pairs.append(('Ionizable_%', 'Ion_DNA_Ratio', 'Ionizable % vs Ion:DNA Ratio'))
+            
+            for x_col, y_col, title in heatmap_pairs:
+                # Create bins for heatmap
+                x_bins = pd.cut(analysis_data[x_col], bins=5)
+                y_bins = pd.cut(analysis_data[y_col], bins=5)
+                
+                heatmap_data = analysis_data.groupby([x_bins, y_bins])['Response'].mean().unstack()
+                
+                if not heatmap_data.empty:
+                    fig_heatmap = go.Figure(data=go.Heatmap(
+                        z=heatmap_data.values,
+                        colorscale='RdYlGn',
+                        hovertemplate='%{z:.2f}<extra></extra>',
+                        colorbar=dict(title=response_variable)
+                    ))
+                    
+                    fig_heatmap.update_layout(
+                        title=f"Response Heatmap: {title}",
+                        xaxis_title=y_col,
+                        yaxis_title=x_col,
+                        height=400
+                    )
+                    
+                    st.plotly_chart(fig_heatmap, use_container_width=True)
+        
+        # Export results
+        if export_results and len(valid_responses) > 0:
+            # Create comprehensive analysis report
+            analysis_output = run_sheet.copy()
+            analysis_output['Response'] = valid_responses.values
+            
+            export_buffer = BytesIO()
+            with pd.ExcelWriter(export_buffer, engine='openpyxl') as writer:
+                analysis_output.to_excel(writer, sheet_name='Results', index=False)
+                
+                # Statistics summary
+                stats_summary = pd.DataFrame({
+                    'Metric': ['Mean', 'Std Dev', 'Min', 'Max', 'Range', 'Count'],
+                    'Value': [
+                        valid_responses.mean(),
+                        valid_responses.std(),
+                        valid_responses.min(),
+                        valid_responses.max(),
+                        valid_responses.max() - valid_responses.min(),
+                        len(valid_responses)
+                    ]
+                })
+                stats_summary.to_excel(writer, sheet_name='Statistics', index=False)
+            
+            export_buffer.seek(0)
+            st.download_button(
+                label="📥 Download Analysis Report",
+                data=export_buffer.getvalue(),
+                file_name=f"DOE_Analysis_{timestamp}.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                use_container_width=True
+            )
     
     st.markdown("---")
     
