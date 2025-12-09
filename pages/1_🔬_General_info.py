@@ -156,16 +156,40 @@ with st.expander("Step 1: Preparation of Lipid Phase (Organic Phase)", expanded=
 with st.expander("Step 2: Preparation of Aqueous Phase", expanded=True):
     st.markdown("""
     **For pDNA-LNPs:**
-    1. Dissolve high-purity **plasmid DNA in Citrate Buffer (10 mM, pH 4.0-4.5)**
+    1. Dissolve high-purity **plasmid DNA in Citrate Buffer (50 mM, pH 3.0-4.0)**
     2. Gently mix until fully dissolved (target: e.g., 1 mg/mL)
     3. ⚠️ **Avoid vigorous vortexing** - can fragment large plasmid DNA molecules
-    4. Maintain pH 4.0-4.5 to ensure ionizable lipids are protonated
+    4. Maintain pH 4.0 to ensure ionizable lipids are protonated
     
     **For mRNA-LNPs:**
     1. Dissolve mRNA in **Acetate Buffer (25 mM, pH ~4)**
     2. Keep temperature controlled (2-8°C preferred)
     3. Avoid freeze-thaw cycles if possible
     """)
+
+    st.markdown("""
+    ### 📌 SOP: Citrate Buffer Preparation (pH 4.0)
+        *For 100 mL or any volume; bilingual instructions*
+
+        **Reagents / 试剂**
+        - Sodium citrate dihydrate (Na3C6H5O7·2H2O)
+        - Citric acid (C6H8O7)
+        - Ultrapure water (RNase/DNase free)
+
+        **A. 0.5 M Stock Solution (pH 4.0) / 0.5 M 枸橼酸钠储备液**
+        1) Dissolve **14.7 g sodium citrate dihydrate** in ~80–90 mL water
+        2) Titrate with **1 M citric acid** slowly to **pH 4.0**
+        3) Bring to **100 mL** total volume
+        4) **0.22 μm filter sterilize**
+        5) Storage: **RT (≤6 months)** or **4°C (≤1 year)**
+
+        **B. Dilute to 50 mM Working Solution / 50 mM 工作液**
+        - Dilution formula: **C1V1 = C2V2** (500 mM → 50 mM = 1:9)
+        - Example for **100 mL 50 mM, pH 4.0**:
+            - **20 mL** of 0.5 M citrate stock
+            - **180 mL** sterile water
+            - Final pH typically **4.0 ± 0.2**; usually **no further adjustment** needed
+        """)
 
 with st.expander("Step 3: Nanoparticle Assembly via Rapid Mixing", expanded=True):
     tab1, tab2 = st.tabs(["Manual Rapid Injection", "Microfluidic Mixing"])
