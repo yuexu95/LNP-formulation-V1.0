@@ -52,9 +52,9 @@ with st.expander("🎯 Define DOE Objective", expanded=True):
     objective = st.selectbox(
         "What is your primary DOE objective?",
         options=[
+            "Response Surface: Map detailed interaction effects",
             "Screening: Identify key factors from many candidates",
             "Optimization: Optimize known key factors",
-            "Response Surface: Map detailed interaction effects",
             "Mixture: Optimize component ratios"
         ],
         help="Choose the DOE strategy based on your research stage"
@@ -120,14 +120,14 @@ with st.expander("📦 Lipid Components Configuration", expanded=False):
     with col_conc1:
         conc_ionizable = st.number_input(
             "Ionizable Lipid (μg/μL)",
-            value=20.0,
+            value=40.0,
             step=0.1,
             key="conc_ion"
         )
     with col_conc2:
         conc_helper = st.number_input(
             "Helper Lipid (μg/μL)",
-            value=5.0,
+            value=10.0,
             step=0.1,
             key="conc_helper"
         )
@@ -141,7 +141,7 @@ with st.expander("📦 Lipid Components Configuration", expanded=False):
     with col_conc4:
         conc_peg = st.number_input(
             "PEG-DMG2000 (μg/μL)",
-            value=2.0,
+            value=10.0,
             step=0.1,
             key="conc_peg"
         )
@@ -1025,9 +1025,10 @@ if "run_sheet" in st.session_state:
     
     st.subheader("🔬 Response Surface Heatmap")
     
-    # Heatmap: Helper Volume vs Ionizable% and Cholesterol%
-    pivot_data = run_sheet.pivot_table(
-        values='Helper_Vol_uL',
+    # Heatmap: Helper Percentage vs Ionizable% and Cholesterol%
+    # Use percentage-based helper values (not volumes) for clearer formulation space view
+    pivot_data = design_display.pivot_table(
+        values='Helper_%',
         index='Cholesterol_%',
         columns='Ionizable_%',
         aggfunc='mean'
@@ -1038,11 +1039,11 @@ if "run_sheet" in st.session_state:
         x=pivot_data.columns,
         y=pivot_data.index,
         colorscale='Viridis',
-        colorbar=dict(title="Helper Vol (µL)")
+        colorbar=dict(title="Helper (%)")
     ))
     
     fig_hm.update_layout(
-        title="Helper Volume: Ionizable% vs Cholesterol%",
+        title="Helper %: Ionizable% vs Cholesterol%",
         xaxis_title="Ionizable Lipid (%)",
         yaxis_title="Cholesterol (%)",
         height=400
