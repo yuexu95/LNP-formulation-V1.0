@@ -403,7 +403,7 @@ with tab_calc1:
     st.markdown("Calculate N/P ratio from nucleic acid mass and ionizable lipid parameters.")
     
     # Input mode selector
-    input_mode = st.radio("Lipid Input Method", ["Direct Moles (nmol)", "Mass + MW"], horizontal=True)
+    input_mode = st.radio("Lipid Input Method", ["Direct Moles (μmol)", "Mass + MW"], horizontal=True)
     
     with st.form("np_form"):
         col1, col2 = st.columns(2)
@@ -415,11 +415,11 @@ with tab_calc1:
         
         with col2:
             st.markdown("**Ionizable Lipid**")
-            if input_mode == "Direct Moles (nmol)":
-                lipid_nmol = st.number_input("Lipid amount (nmol)", value=42.3, min_value=0.1, step=1.0, help="Direct input of ionizable lipid moles")
+            if input_mode == "Direct Moles (μmol)":
+                lipid_umol = st.number_input("Lipid amount (μmol)", value=0.0423, min_value=0.0001, step=0.001, format="%.4f", help="Direct input of ionizable lipid moles")
             else:
                 lipid_mass_ug = st.number_input("Lipid mass (μg)", value=30.0, min_value=0.1, step=1.0, help="Ionizable lipid mass in micrograms")
-                lipid_mw = st.number_input("Molecular weight (g/mol)", value=710.18, min_value=100.0, step=10.0, help="MW of ionizable lipid (e.g., SM-102: 710.18)")
+                lipid_mw = st.number_input("Molecular weight (μg/μmol)", value=710.18, min_value=100.0, step=10.0, help="MW of ionizable lipid (e.g., SM-102: 710.18)")
             
             amines_per_mol = st.number_input("Amines per molecule", value=1.0, min_value=1.0, step=1.0, help="Number of ionizable amine groups per lipid")
         
@@ -428,54 +428,59 @@ with tab_calc1:
     if submit_np:
         # Calculate lipid moles if mass+MW mode
         if input_mode == "Mass + MW":
-            # Convert μg to g, divide by MW to get mol, then convert to nmol
-            lipid_nmol = (lipid_mass_ug * 1e-6 / lipid_mw) * 1e9
+            # Convert μg to μmol using MW (μg/μmol)
+            lipid_umol = lipid_mass_ug / lipid_mw
         
-        # Phosphate calculation: P = mass(μg) / 330 g/mol → nmol
-        # 330 is average MW per nucleotide for both RNA and DNA
-        P_nmol = na_mass_ug / 330.0
+        # Phosphate calculation (matching page 2 logic)
+        # P (μmol) = mass(μg) × 10^-6 (to g) / 330 (g/mol) × 10^6 (to μmol)
+        # Simplified: P (μmol) = mass(μg) / 330
+        nucleic_acid_mass_g = na_mass_ug * 1e-6
+        phosphate_moles_mol = nucleic_acid_mass_g / 330.0
+        P_umol = phosphate_moles_mol * 1e6
         
         # Nitrogen calculation
-        N_nmol = lipid_nmol * amines_per_mol
+        N_umol = lipid_umol * amines_per_mol
         
         # N/P ratio
-        np_ratio = N_nmol / P_nmol if P_nmol > 0 else 0
+        np_ratio = N_umol / P_umol if P_umol > 0 else 0
         
         st.markdown("---")
         col_res1, col_res2, col_res3 = st.columns(3)
         with col_res1:
             st.metric("N/P Ratio", f"{np_ratio:.2f}", help="Molar ratio of amine groups to phosphate groups")
         with col_res2:
-            st.metric("N (Nitrogen, nmol)", f"{N_nmol:.2f}", help="Total amine groups from ionizable lipid")
+            st.metric("N (Nitrogen, μmol)", f"{N_umol:.4f}", help="Total amine groups from ionizable lipid")
         with col_res3:
-            st.metric("P (Phosphate, nmol)", f"{P_nmol:.2f}", help="Total phosphate groups from nucleic acid")
+            st.metric("P (Phosphate, μmol)", f"{P_umol:.4f}", help="Total phosphate groups from nucleic acid")
         
         # Detailed calculation breakdown
         with st.expander("📝 Calculation Details"):
             st.markdown(f"""
             **Nucleic Acid:** {na_type}
             - Mass: {na_mass_ug} μg
-            - Phosphate moles: {na_mass_ug} μg ÷ 330 g/mol = **{P_nmol:.2f} nmol**
+            - Conversion: {na_mass_ug} μg × 10⁻⁶ = {nucleic_acid_mass_g:.6f} g
+            - Phosphate moles: {nucleic_acid_mass_g:.6f} g ÷ 330 g/mol = {phosphate_moles_mol:.9f} mol
+            - Phosphate moles: {phosphate_moles_mol:.9f} mol × 10⁶ = **{P_umol:.4f} μmol**
             
             **Ionizable Lipid:**
             """)
             if input_mode == "Mass + MW":
                 st.markdown(f"""
                 - Mass: {lipid_mass_ug} μg
-                - Molecular weight: {lipid_mw} g/mol
-                - Lipid moles: ({lipid_mass_ug} × 10⁻⁶ g) ÷ {lipid_mw} g/mol × 10⁹ = **{lipid_nmol:.2f} nmol**
+                - Molecular weight: {lipid_mw} μg/μmol
+                - Lipid moles: {lipid_mass_ug} μg ÷ {lipid_mw} μg/μmol = **{lipid_umol:.4f} μmol**
                 - Amines per molecule: {amines_per_mol}
-                - Nitrogen moles: {lipid_nmol:.2f} nmol × {amines_per_mol} = **{N_nmol:.2f} nmol**
+                - Nitrogen moles: {lipid_umol:.4f} μmol × {amines_per_mol} = **{N_umol:.4f} μmol**
                 """)
             else:
                 st.markdown(f"""
-                - Lipid moles: {lipid_nmol:.2f} nmol
+                - Lipid moles: {lipid_umol:.4f} μmol
                 - Amines per molecule: {amines_per_mol}
-                - Nitrogen moles: {lipid_nmol:.2f} nmol × {amines_per_mol} = **{N_nmol:.2f} nmol**
+                - Nitrogen moles: {lipid_umol:.4f} μmol × {amines_per_mol} = **{N_umol:.4f} μmol**
                 """)
             
             st.markdown(f"""
-            **N/P Ratio = {N_nmol:.2f} ÷ {P_nmol:.2f} = {np_ratio:.2f}**
+            **N/P Ratio = {N_umol:.4f} ÷ {P_umol:.4f} = {np_ratio:.2f}**
             """)
             
             # Interpretation
