@@ -262,9 +262,9 @@ with st.expander("🎛️ Select Factors to Study", expanded=True):
     with col_f2:
         study_cholesterol = st.checkbox("Cholesterol %", value=True)
     with col_f3:
-        study_peg = st.checkbox("PEG-DMG2000 %", value=False)
+        study_peg = st.checkbox("PEG-DMG2000 %", value=True)
     with col_f4:
-        study_ion_dna = st.checkbox("Ion:DNA Ratio", value=True)
+        study_ion_dna = st.checkbox("Ion:DNA Mass Ratio", value=True)
     
     num_factors = sum([study_ionizable, study_cholesterol, study_peg, study_ion_dna])
     
