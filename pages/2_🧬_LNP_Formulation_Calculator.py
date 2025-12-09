@@ -226,25 +226,7 @@ with tab_pdna:
             st.session_state.pdna_history.append(record)
             st.success(f"✅ pDNA formulation '{record['Name']}' calculated!")
     
-    # Results display
-    if st.session_state.pdna_result_df is not None:
-        st.markdown("---")
-        st.subheader("📊 pDNA Formulation Results")
-        
-        np_ratio, n_moles, p_moles = calculate_np_ratio(
-            pdna_scale, st.session_state.pdna_volumes["ionizable_lipid_moles"], pdna_amines
-        )
-        
-        metric_col1, metric_col2, metric_col3 = st.columns(3)
-        with metric_col1:
-            st.metric("N/P Ratio", f"{np_ratio:.3f}")
-        with metric_col2:
-            st.metric("N (amine groups, μmol)", f"{n_moles:.4f}")
-        with metric_col3:
-            st.metric("P (phosphate groups, μmol)", f"{p_moles:.4f}")
-        
-        st.caption("📌 For dsDNA: P = DNA mass (μg) / 330")
-        st.success("✅ Formulation saved to history below")
+
         
     # History display
     if len(st.session_state.pdna_history) > 0:
@@ -281,6 +263,25 @@ with tab_pdna:
             if st.button("🗑️ Clear pDNA History", key="pdna_clear"):
                 st.session_state.pdna_history = []
                 st.rerun()
+    # Results display
+    if st.session_state.pdna_result_df is not None:
+        st.markdown("---")
+        st.subheader("📊 pDNA Formulation Results")
+        
+        np_ratio, n_moles, p_moles = calculate_np_ratio(
+            pdna_scale, st.session_state.pdna_volumes["ionizable_lipid_moles"], pdna_amines
+        )
+        
+        metric_col1, metric_col2, metric_col3 = st.columns(3)
+        with metric_col1:
+            st.metric("N/P Ratio", f"{np_ratio:.3f}")
+        with metric_col2:
+            st.metric("N (amine groups, μmol)", f"{n_moles:.4f}")
+        with metric_col3:
+            st.metric("P (phosphate groups, μmol)", f"{p_moles:.4f}")
+        
+        st.caption("📌 For dsDNA: P = DNA mass (μg) / 330")
+        st.success("✅ Formulation saved to history below")
 
 # ============================================================================
 # TAB 2: mRNA FORMULATION
