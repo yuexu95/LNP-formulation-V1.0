@@ -171,19 +171,19 @@ with st.expander("Step 2: Preparation of Aqueous Phase", expanded=True):
     ### 📌 SOP: Citrate Buffer Preparation (pH 4.0)
         *For 100 mL or any volume; bilingual instructions*
 
-        **Reagents / 试剂**
+        **Reagents**
         - Sodium citrate dihydrate (Na3C6H5O7·2H2O)
         - Citric acid (C6H8O7)
         - Ultrapure water (RNase/DNase free)
 
-        **A. 0.5 M Stock Solution (pH 4.0) / 0.5 M 枸橼酸钠储备液**
+        **A. 0.5 M Stock Solution (pH 4.0) **
         1) Dissolve **14.7 g sodium citrate dihydrate** in ~80–90 mL water
         2) Titrate with **1 M citric acid** slowly to **pH 4.0**
         3) Bring to **100 mL** total volume
         4) **0.22 μm filter sterilize**
         5) Storage: **RT (≤6 months)** or **4°C (≤1 year)**
 
-        **B. Dilute to 50 mM Working Solution / 50 mM 工作液**
+        **B. Dilute to 50 mM Working Solution**
         - Dilution formula: **C1V1 = C2V2** (500 mM → 50 mM = 1:9)
         - Example for **100 mL 50 mM, pH 4.0**:
             - **20 mL** of 0.5 M citrate stock
