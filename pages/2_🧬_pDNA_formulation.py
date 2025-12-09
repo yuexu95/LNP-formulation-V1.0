@@ -130,23 +130,23 @@ def main():
 
     col1, col2, col3, col4 = st.columns(4)
     with col1:
-        dna_scale = st.number_input("DNA Scale (μg)", min_value=0.0, step=1.0, value=3.0)
+        dna_scale = st.number_input("DNA Scale (μg)", min_value=0.0, step=1.0, value=3.0, help=" Minimum DNA amount for each LNP formation is typically around 3 μg")
     with col2:
         dna_stock_concentration = st.number_input("DNA Stock (μg/μL)", min_value=0.0, step=0.1, value=1.0)
     with col3:
-        ionizable_lipid_to_dna_ratio = st.number_input("Ionizable Lipid to DNA Ratio", min_value=0.0, max_value=20.0, step=1.0, value=10.0)
+        ionizable_lipid_to_dna_ratio = st.number_input("Ionizable Lipid to DNA Ratio", min_value=0.0, step=1.0, value=10.0)
     with col4:
         aqueous_to_ethanol_ratio = st.number_input("Aqueous to Ethanol Ratio", min_value=0.0, step=0.1, value=3.0)
 
     col5, col6, col7, col8 = st.columns(4)
     with col5:
-        ionizable_lipid_mw = st.number_input("Ionizable Lipid Molecular Weight (μg/μmol)", min_value=0.0, step=1.0, value=710.182)
+        ionizable_lipid_mw = st.number_input("Ionizable Lipid Molecular Weight (μg/μmol)", min_value=0.0, step=1.0, value=710.182, help="E.g., SM-102 MW = 710.182 μg/μmol")
     with col6:
-        helper_lipid_mw = st.number_input("Helper Lipid Molecular Weight (μg/μmol)", min_value=0.0, step=1.0, value=790.147)
+        helper_lipid_mw = st.number_input("Helper Lipid Molecular Weight (μg/μmol)", min_value=0.0, step=1.0, value=790.147, help="E.g., DSPC MW = 790.147 μg/μmol" )
     with col7:
-        cholesterol_mw = st.number_input("Cholesterol Molecular Weight (μg/μmol)", min_value=0.0, step=1.0, value=386.654)
+        cholesterol_mw = st.number_input("Cholesterol Molecular Weight (μg/μmol)", min_value=0.0, step=1.0, value=386.654, help="E.g., Cholesterol MW = 386.654 μg/μmol")
     with col8:
-        pegdmg2000_mw = st.number_input("PEG-DMG2000 Molecular Weight (μg/μmol)", min_value=0.0, step=1.0, value=2509.2)
+        pegdmg2000_mw = st.number_input("PEG-DMG2000 Molecular Weight (μg/μmol)", min_value=0.0, step=1.0, value=2509.2, help="E.g., PEG-DMG2000 MW = 2509.2 μg/μmol")
 
     col9, col10, col11, col12 = st.columns(4)
     with col9:
