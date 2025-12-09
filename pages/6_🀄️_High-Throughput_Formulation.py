@@ -279,6 +279,13 @@ with st.expander("📏 Define Factor Ranges (Low & High Levels)", expanded=True)
     st.write("Specify the minimum and maximum values for each factor:")
     
     factor_ranges = {}
+    
+    # Get predefined PEG range (constant for initial calculation)
+    peg_range_default = (0.5, 2.5)
+    ion_dna_range_default = (5.0, 15.0)
+    min_helper_target = 0.5
+    
+    # Initial slider values
     range_cols = st.columns(2)
     
     if study_ionizable:
@@ -298,14 +305,70 @@ with st.expander("📏 Define Factor Ranges (Low & High Levels)", expanded=True)
             st.markdown("**PEG-DMG2000 %**")
             peg_range = st.slider("Range", min_value=0.1, max_value=5.0, value=(0.5, 2.5), step=0.1, label_visibility="collapsed", key="peg_range")
             factor_ranges["PEG_%"] = peg_range
+    else:
+        factor_ranges["PEG_%"] = peg_range_default
     
     if study_ion_dna:
         with range_cols[1]:
             st.markdown("**Ionizable:DNA Ratio (μg/μg)**")
             ion_dna_range = st.slider("Range", min_value=1.0, max_value=20.0, value=(5.0, 15.0), step=0.5, label_visibility="collapsed", key="ion_dna_range")
             factor_ranges["Ion_DNA_Ratio"] = ion_dna_range
+    else:
+        factor_ranges["Ion_DNA_Ratio"] = ion_dna_range_default
     
+    # Check feasibility and suggest adjustments
     st.info("💡 **Tip**: Wider ranges explore more of design space but may include non-functional formulations. Narrow ranges focus on known good regions.")
+    
+    with st.expander("🔧 Smart Range Optimizer", expanded=True):
+        st.markdown("**LNP Composition Constraint**: Ionizable + Cholesterol + PEG + Helper = 100%  |  **Min Helper**: 0.5%")
+        
+        # Get the selected ranges
+        ion_range = factor_ranges.get("Ionizable_%", (45.0, 55.0))
+        chol_range = factor_ranges.get("Cholesterol_%", (33.5, 43.5))
+        peg_range = factor_ranges.get("PEG_%", (0.5, 2.5))
+        
+        # Calculate feasibility
+        max_sum = ion_range[1] + chol_range[1] + peg_range[1]
+        min_helper_possible = 100.0 - max_sum
+        
+        col_opt1, col_opt2, col_opt3 = st.columns(3)
+        with col_opt1:
+            st.metric("Max Sum", f"{max_sum:.1f}%", delta=f"{100.0 - max_sum:.1f}% Helper")
+        with col_opt2:
+            feasible_status = "✅ Feasible" if max_sum <= 99.5 else "❌ Infeasible"
+            st.metric("Status", feasible_status)
+        with col_opt3:
+            filtered_points = "All Points" if max_sum <= 99.5 else "Filtered"
+            st.metric("Design Points", filtered_points)
+        
+        # If infeasible, suggest optimal ranges
+        if max_sum > 99.5:
+            st.warning(f"⚠️ **Issue**: Max sum = {max_sum:.1f}% exceeds 99.5% limit. Some design combinations will be filtered out.")
+            
+            col_suggest1, col_suggest2 = st.columns(2)
+            
+            with col_suggest1:
+                st.markdown("**Option 1: Reduce Ionizable Upper Limit**")
+                # Calculate max ionizable that allows all combinations
+                max_ion_suggested = 99.5 - chol_range[1] - peg_range[1]
+                st.info(f"Recommended: Ionizable {ion_range[0]:.1f} → {max_ion_suggested:.1f}% (reduced from {ion_range[1]:.1f}%)")
+            
+            with col_suggest2:
+                st.markdown("**Option 2: Reduce Cholesterol Upper Limit**")
+                # Calculate max cholesterol that allows all combinations
+                max_chol_suggested = 99.5 - ion_range[1] - peg_range[1]
+                st.info(f"Recommended: Cholesterol {chol_range[0]:.1f} → {max_chol_suggested:.1f}% (reduced from {chol_range[1]:.1f}%)")
+            
+            st.markdown("**Option 3: Reduce PEG Upper Limit**")
+            max_peg_suggested = 99.5 - ion_range[1] - chol_range[1]
+            st.info(f"Recommended: PEG {peg_range[0]:.1f} → {max_peg_suggested:.1f}% (reduced from {peg_range[1]:.1f}%)")
+            
+            st.markdown("""
+            **Strategy**: The recommended values will allow all 2^n design point combinations to be valid.
+            Choose the factor that is least critical for your research to minimize its upper limit.
+            """)
+        else:
+            st.success(f"✅ **Optimal**: Your ranges are feasible. All 2^n combinations will be valid. Helper range: {min_helper_possible:.1f}% - 100%")
 
 st.markdown("---")
 
