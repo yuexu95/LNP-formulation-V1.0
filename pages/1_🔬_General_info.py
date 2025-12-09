@@ -400,34 +400,35 @@ tab_calc1, tab_calc2, tab_calc3 = st.tabs(["N/P Ratio", "Volume Calculator", "Re
 # TAB 1: N/P RATIO CALCULATOR
 with tab_calc1:
     st.subheader("N/P Ratio Calculator")
-    st.markdown("Calculate N/P ratio from stock concentration, volume, and DNA mass.")
+    st.markdown("Calculate N/P ratio from DNA mass and lipid dose.")
     
     with st.form("np_form"):
         col1, col2 = st.columns(2)
         
         with col1:
-            dna_mass_ug = st.number_input("DNA mass (μg)", value=10.0, min_value=0.1, step=0.5)
-            stock_mM = st.number_input("Ionizable lipid stock (mM)", value=100.0, min_value=1.0, step=10.0)
+            st.markdown("**Nucleic Acid**")
+            dna_mass_ug = st.number_input("DNA mass (μg)", value=100.0, min_value=0.1, step=10.0)
         
         with col2:
-            add_volume_uL = st.number_input("Volume added (μL)", value=50.0, min_value=0.1, step=1.0)
-            amines_per_mol = st.number_input("Amines per molecule", value=1.0, min_value=0.5, step=0.5)
+            st.markdown("**Ionizable Lipid**")
+            lipid_nmol = st.number_input("Lipid amount (nmol)", value=600.0, min_value=10.0, step=50.0)
         
         submit_np = st.form_submit_button("Calculate N/P Ratio")
     
     if submit_np:
-        # Calculate
-        P_mol = (dna_mass_ug * 1e-6) / 330.0
-        N_mol = (stock_mM * 1e-3) * (add_volume_uL * 1e-6) * amines_per_mol
-        np_ratio = N_mol / P_mol if P_mol > 0 else 0
+        # Phosphate calculation: P = mass(μg) / 330(μg/nmol) in nmol
+        P_nmol = dna_mass_ug / 330.0
+        
+        # N/P ratio (assuming 1 amine per lipid molecule)
+        np_ratio = lipid_nmol / P_nmol if P_nmol > 0 else 0
         
         col_res1, col_res2, col_res3 = st.columns(3)
         with col_res1:
             st.metric("N/P Ratio", f"{np_ratio:.2f}")
         with col_res2:
-            st.metric("Phosphate (mol)", f"{P_mol:.2e}")
+            st.metric("Phosphate (nmol)", f"{P_nmol:.1f}")
         with col_res3:
-            st.metric("Nitrogen (mol)", f"{N_mol:.2e}")
+            st.metric("Nitrogen (nmol)", f"{lipid_nmol:.1f}")
 
 # TAB 2: VOLUME CALCULATOR
 with tab_calc2:
