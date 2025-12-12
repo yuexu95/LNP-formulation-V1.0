@@ -6,8 +6,11 @@ Here we just have the home page, with a short description of the tabs, and some 
 
 """
 
-
 import streamlit as st
+import streamlit_authenticator as stauth
+import yaml
+from yaml.loader import SafeLoader
+from pathlib import Path
 
 st.set_page_config(
     page_title="Home page",

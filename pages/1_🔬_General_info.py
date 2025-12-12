@@ -5,6 +5,7 @@ import numpy as np
 
 st.set_page_config(page_title="General Information & Methods", page_icon="🔬", layout="wide")
 
+
 st.title("🔬 LNP Fundamentals & Operating Protocol")
 
 # ============================================================================
