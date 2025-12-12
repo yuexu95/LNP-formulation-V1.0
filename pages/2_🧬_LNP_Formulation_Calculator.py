@@ -37,6 +37,12 @@ def calculate_np_ratio(nucleic_acid_mass_ug, ionizable_lipid_moles, amines_per_m
     
     return np_ratio, amine_moles_umol, phosphate_moles_umol
 
+def format_ratio_label(ratio_value):
+    """Formats ratio values without trailing decimals when unnecessary."""
+    if ratio_value == int(ratio_value):
+        return f"{int(ratio_value)}:1"
+    return f"{ratio_value:.1f}:1"
+
 def calculate_EtOH_master_mix_volume(ion_lipid_volume, helper_lipid_volume, cholesterol_volume, pegdmg2000_volume):
     """
     Calculates the total volume of ethanol master mix needed for LNP formulation.
@@ -206,7 +212,7 @@ with tab_pdna:
     with col2:
         pdna_stock_conc = st.number_input("DNA Stock (μg/μL)", min_value=0.0, step=0.1, value=1.0, key="pdna_stock", help="Concentration of the DNA stock solution")
     with col3:
-        pdna_ion_dna_ratio = st.number_input("Ionizable Lipid to DNA Ratio", min_value=0.0, step=1.0, value=10, key="pdna_ratio", help="10:1 is equivalent to N/P ~4-5 for pDNA")
+        pdna_ion_dna_ratio = st.number_input("Ionizable Lipid to DNA Ratio", min_value=0.0, step=1.0, value=10.0, key="pdna_ratio", help="10:1 is equivalent to N/P ~4-5 for pDNA")
     with col4:
         pdna_aq_eth_ratio = st.number_input("Aqueous to Ethanol Ratio", min_value=0.0, step=0.1, value=3.0, key="pdna_aq_eth", help="Common ratio is 3:1")
 
@@ -275,7 +281,7 @@ with tab_pdna:
             record = {
                 "Name": pdna_name if pdna_name else "Unnamed",
                 "DNA (μg)": f"{pdna_scale:.2f}",
-                "Ion:DNA Ratio": f"{pdna_ion_dna_ratio:.1f}:1",
+                "Ion:DNA Ratio": format_ratio_label(pdna_ion_dna_ratio),
                 "N/P Ratio": f"{np_ratio:.3f}",
                 "Ion%": f"{pdna_ion_ratio:.1f}%",
                 "Helper%": f"{pdna_helper_ratio:.1f}%",
@@ -437,7 +443,7 @@ with tab_mrna:
                 "PEG (μL)": f"{mrna_volumes['pegdmg2000_volume']:.2f}",
                 "Ethanol (μL)": f"{mrna_volumes['ethanol']:.2f}",
                 "N/P Ratio": f"{np_ratio:.3f}",
-                "Ion:RNA Ratio": f"{mrna_ion_rna_ratio:.1f}:1",
+                "Ion:RNA Ratio": format_ratio_label(mrna_ion_rna_ratio),
                 "Ion%": f"{mrna_ion_ratio:.1f}%",
                 "Helper%": f"{mrna_helper_ratio:.1f}%",
                 "Chol%": f"{mrna_chol_ratio:.1f}%",
