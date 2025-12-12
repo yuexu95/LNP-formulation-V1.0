@@ -306,10 +306,7 @@ with tab_pdna:
                 "Water (μL)": f"{pdna_volumes['water_volume']:.2f}",
                 "Nucleic Acid (μL)": f"{pdna_volumes['nucleic_acid_volume']:.2f}",
                 "Aqueous Phase Total (μL)": f"{pdna_volumes['aqueous_volume']:.2f}",
-                "Bulk Count": f"{pdna_bulk_times}x",
-                "Ethanol Master Mix (μL)*1.5": f"{pdna_bulk_ethanol:.2f}",
-                "Aqueous Master Mix (μL)*1.2": f"{pdna_bulk_aqueous:.2f}",
-                "Bulk Total (μL)*1.2": f"{pdna_bulk_total:.2f}"
+                "LNP total (μL)": f"{pdna_volumes['ethanol_phase_total_volume'] + pdna_volumes['aqueous_volume']:.2f}",
             }
          
             st.session_state.pdna_history.append(record)
