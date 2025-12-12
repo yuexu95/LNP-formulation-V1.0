@@ -324,7 +324,6 @@ with tab_pdna:
         # Show Bulk View details option
         with st.expander("📊 Bulk View details"):
             bulk_multipliers = {
-                "DNA (μg)": 1.2,
                 "Ion Lipid (μL)": 1.5,
                 "Helper (μL)": 1.5,
                 "Cholesterol (μL)": 1.5,
