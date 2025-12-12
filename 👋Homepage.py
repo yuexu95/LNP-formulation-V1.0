@@ -46,10 +46,6 @@ st.markdown(
     - **Bulk volumes**: auto-summed master mixes (ethanol ×1.5, aqueous ×1.2) and totals for multi-batch prep.
     - **History & export**: each run saved; download CSV for record-keeping.
 
-    ### Quick start
-    1. Run locally: `streamlit run 👋Homepage.py`
-    2. Open a calculator page, enter parameters, and click **Calculate**.
-    3. Expand **Bulk View details** in History to see multi-batch volumes.
 
     ### Enjoy the app!
     """
