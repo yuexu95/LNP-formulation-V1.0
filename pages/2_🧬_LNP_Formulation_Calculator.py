@@ -481,10 +481,7 @@ with tab_mrna:
                 "Helper%": f"{mrna_helper_ratio:.1f}%",
                 "Chol%": f"{mrna_chol_ratio:.1f}%",
                 "PEG%": f"{mrna_peg_ratio:.2f}%",
-                "Bulk Count": f"{mrna_bulk_times}x",
-                "Ethanol Master Mix (μL)*1.5": f"{mrna_bulk_ethanol:.2f}",
-                "Aqueous Master Mix (μL)*1.2": f"{mrna_bulk_aqueous:.2f}",
-                "Bulk Total (μL)*1.2": f"{mrna_bulk_total:.2f}"
+                "Target LNP Volume (μL)": f"{mrna_volumes['ethanol_phase_total_volume'] + mrna_volumes['aqueous_volume']:.2f}",
             }
             st.session_state.mrna_history.append(record)
             st.success(f"✅ mRNA formulation '{record['Name']}' calculated!")
