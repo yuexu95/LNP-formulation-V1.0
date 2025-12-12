@@ -389,8 +389,6 @@ with tab_mrna:
         st.session_state.mrna_result_df = None
         st.session_state.mrna_volumes = None
         st.session_state.mrna_history = []
-        st.session_state.mrna_last_scale = None
-        st.session_state.mrna_last_amines = None
     
     # Input section
     st.subheader("📋 mRNA Formulation Parameters")
@@ -475,6 +473,11 @@ with tab_mrna:
                 "Cholesterol (μL)": f"{mrna_volumes['cholesterol_volume']:.2f}",
                 "PEG (μL)": f"{mrna_volumes['pegdmg2000_volume']:.2f}",
                 "Ethanol (μL)": f"{mrna_volumes['ethanol']:.2f}",
+                "Ethanol Phase Total (μL)": f"{mrna_volumes['ethanol_phase_total_volume']:.2f}",
+                "10mM Citrate (μL)": f"{mrna_volumes['citrate_volume']:.2f}",
+                "Water (μL)": f"{mrna_volumes['water_volume']:.2f}",
+                "Nucleic Acid (μL)": f"{mrna_volumes['nucleic_acid_volume']:.2f}",
+                "Aqueous Phase Total (μL)": f"{mrna_volumes['aqueous_volume']:.2f}",
                 "N/P Ratio": f"{np_ratio:.3f}",
                 "Ion:RNA Ratio": format_ratio_label(mrna_ion_rna_ratio),
                 "Ion%": f"{mrna_ion_ratio:.1f}%",
@@ -487,35 +490,7 @@ with tab_mrna:
                 "Bulk Total (μL)*1.2": f"{mrna_bulk_total:.2f}"
             }
             st.session_state.mrna_history.append(record)
-            st.session_state.mrna_last_scale = mrna_scale
-            st.session_state.mrna_last_amines = mrna_amines
             st.success(f"✅ mRNA formulation '{record['Name']}' calculated!")
-    
-    # Results display
-    if (
-        st.session_state.mrna_result_df is not None
-        and st.session_state.mrna_volumes is not None
-    ):
-        volumes = st.session_state.mrna_volumes
-        last_scale = st.session_state.mrna_last_scale or mrna_scale
-        last_amines = st.session_state.mrna_last_amines or mrna_amines
-        np_ratio, n_moles, p_moles = calculate_np_ratio(
-            last_scale, volumes["ionizable_lipid_moles"], last_amines
-        )
-        
-        st.subheader("📊 mRNA Formulation Results")
-        st.dataframe(st.session_state.mrna_result_df, use_container_width=True)
-        
-        metric_col1, metric_col2, metric_col3 = st.columns(3)
-        with metric_col1:
-            st.metric("N/P Ratio", f"{np_ratio:.3f}")
-        with metric_col2:
-            st.metric("N (amine groups, μmol)", f"{n_moles:.4f}")
-        with metric_col3:
-            st.metric("P (phosphate groups, μmol)", f"{p_moles:.4f}")
-        
-        st.caption("📌 For mRNA: P = RNA mass (μg) / 330")
-        st.success("✅ Formulation saved to history below")
     
     # History display
     if len(st.session_state.mrna_history) > 0:
@@ -526,23 +501,45 @@ with tab_mrna:
         # Display with full width and scrolling
         st.dataframe(history_df, use_container_width=True, height=300)
         
-        # Show detailed view option
-        with st.expander("📊 View Details"):
-            for idx, record in enumerate(st.session_state.mrna_history, 1):
-                st.markdown(f"**Entry {idx}: {record['Name']}**")
-                col1, col2 = st.columns(2)
-                with col1:
-                    st.write(f"🧬 RNA: {record['RNA (μg)']} μg")
-                    st.write(f"⚗️ Ion Lipid: {record['Ion Lipid (μL)']} μL")
-                    st.write(f"🧪 Helper: {record['Helper (μL)']} μL")
-                    st.write(f"💊 Cholesterol: {record['Cholesterol (μL)']} μL")
-                    st.write(f"🔷 PEG: {record['PEG (μL)']} μL")
-                with col2:
-                    st.write(f"🌫️ Ethanol: {record['Ethanol (μL)']} μL")
-                    st.write(f"📈 N/P Ratio: {record['N/P Ratio']}")
-                    st.write(f"🔢 Ion:RNA: {record['Ion:RNA Ratio']}")
-                    st.write(f"📊 Composition - Ion: {record['Ion%']}, Helper: {record['Helper%']}, Chol: {record['Chol%']}, PEG: {record['PEG%']}")
-                st.divider()
+        # Show Bulk View details option
+        with st.expander("📊 Bulk View details"):
+            hint = st.info("If you prepare multiple LNPs with the same component ratios, you can use bulk volumes with extra buffer: Lipids and Ethanol x1.5, Aqueous components x1.2")
+            bulk_multipliers = {
+                "Ion Lipid (μL)": 1.5,
+                "Helper (μL)": 1.5,
+                "Cholesterol (μL)": 1.5,
+                "PEG (μL)": 1.5,
+                "Ethanol Master Mix (μL)*1.5": 1.0,
+                "Aqueous Master Mix (μL)*1.2": 1.0,
+                "Bulk Total (μL)*1.2": 1.0,
+                "Ethanol (μL)": 1.5,
+                "10mM Citrate (μL)": 1.2,
+                "Water (μL)": 1.2,
+                "Nucleic Acid (μL)": 1.2,
+                "Ethanol Phase Total (μL)": 1.5,
+                "Aqueous Phase Total (μL)": 1.2,
+            }
+
+            bulk_summary = []
+            for column, multiplier in bulk_multipliers.items():
+                if column not in history_df:
+                    continue
+                numeric_series = pd.to_numeric(history_df[column], errors="coerce")
+                base_total = numeric_series.sum()
+                bulk_total = base_total * multiplier
+                bulk_summary.append({
+                    "Component": column,
+                    "Sum": base_total,
+                    "Bulk Volume": bulk_total
+                })
+
+            if bulk_summary:
+                bulk_df = pd.DataFrame(bulk_summary)
+                bulk_df["Sum"] = bulk_df["Sum"].round(2)
+                bulk_df["Bulk Volume"] = bulk_df["Bulk Volume"].round(2)
+                st.dataframe(bulk_df, use_container_width=True)
+            else:
+                st.info("No bulk data available yet.")
         
         col_h1, col_h2 = st.columns(2)
         with col_h1:
