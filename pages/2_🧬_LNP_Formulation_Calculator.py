@@ -204,6 +204,7 @@ tab_pdna, tab_mrna = st.tabs(["🧬 pDNA Formulation", "〰️ mRNA Formulation"
 
 with tab_pdna:
     st.header("pDNA LNP Formulation Calculator")
+    st.info("Note: This calculator is designed for double-stranded plasmid DNA (dsDNA). For single-stranded DNA (ssDNA), please adjust the calculations accordingly. For pDNA delivery, the citrate buffer concentration is typically 25 mM.")
     
     # Initialize session state for pDNA
     if "pdna_result_df" not in st.session_state:
@@ -299,13 +300,16 @@ with tab_pdna:
                 "Helper (μL)": f"{pdna_volumes['helper_lipid_volume']:.2f}",
                 "Cholesterol (μL)": f"{pdna_volumes['cholesterol_volume']:.2f}",
                 "PEG (μL)": f"{pdna_volumes['pegdmg2000_volume']:.2f}",
-                "Ethonal Master Mix (μL)*1.5": f"{pdna_bulk_ethanol:.2f}",
                 "Ethanol (μL)": f"{pdna_volumes['ethanol']:.2f}",
                 "Ethanol Phase Total (μL)": f"{pdna_volumes['ethanol_phase_total_volume']:.2f}",
                 "250mM Citrate (μL)": f"{pdna_volumes['citrate_volume']:.2f}",
                 "Water (μL)": f"{pdna_volumes['water_volume']:.2f}",
                 "Nucleic Acid (μL)": f"{pdna_volumes['nucleic_acid_volume']:.2f}",
                 "Aqueous Phase Total (μL)": f"{pdna_volumes['aqueous_volume']:.2f}",
+                "Bulk Count": f"{pdna_bulk_times}x",
+                "Ethanol Master Mix (μL)*1.5": f"{pdna_bulk_ethanol:.2f}",
+                "Aqueous Master Mix (μL)*1.2": f"{pdna_bulk_aqueous:.2f}",
+                "Bulk Total (μL)*1.2": f"{pdna_bulk_total:.2f}"
             }
          
             st.session_state.pdna_history.append(record)
@@ -330,7 +334,9 @@ with tab_pdna:
                 "Helper (μL)": 1.5,
                 "Cholesterol (μL)": 1.5,
                 "PEG (μL)": 1.5,
-                "Ethonal Master Mix (μL)*1.5": 1.5,
+                "Ethanol Master Mix (μL)*1.5": 1.0,
+                "Aqueous Master Mix (μL)*1.2": 1.0,
+                "Bulk Total (μL)*1.2": 1.0,
                 "Ethanol (μL)": 1.5,
                 "250mM Citrate (μL)": 1.2,
                 "Water (μL)": 1.2,
@@ -376,6 +382,7 @@ with tab_pdna:
 
 with tab_mrna:
     st.header("mRNA LNP Formulation Calculator")
+    st.info("Note: This calculator is designed for messenger RNA (mRNA). For mRNA delivery, the citrate buffer concentration is typically 10 mM.")
     
     # Initialize session state for mRNA
     if "mrna_result_df" not in st.session_state:
