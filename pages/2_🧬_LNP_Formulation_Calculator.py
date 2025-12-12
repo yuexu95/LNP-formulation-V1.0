@@ -305,10 +305,6 @@ with tab_pdna:
                 "Water (μL)": f"{pdna_volumes['water_volume']:.2f}",
                 "Nucleic Acid (μL)": f"{pdna_volumes['nucleic_acid_volume']:.2f}",
                 "Aqueous Phase Total (μL)": f"{pdna_volumes['aqueous_volume']:.2f}",
-                "Bulk Count": f"{pdna_bulk_times}x",
-                "Ethanol Master Mix (μL)*1.5": f"{pdna_bulk_ethanol:.2f}",
-                "Aqueous Master Mix (μL)*1.2": f"{pdna_bulk_aqueous:.2f}",
-                "Bulk Total (μL)*1.2": f"{pdna_bulk_total:.2f}"
             }
          
             st.session_state.pdna_history.append(record)
@@ -325,23 +321,43 @@ with tab_pdna:
         # Display with full width and scrolling
         st.dataframe(history_df, use_container_width=True, height=300)
         
-        # Show detailed view option
-        with st.expander("📊 View Details"):
-            for idx, record in enumerate(st.session_state.pdna_history, 1):
-                st.markdown(f"**Entry {idx}: {record['Name']}**")
-                col1, col2 = st.columns(2)
-                with col1:
-                    st.write(f"🧬 DNA: {record['DNA (μg)']} μg")
-                    st.write(f"⚗️ Ion Lipid: {record['Ion Lipid (μL)']} μL")
-                    st.write(f"🧪 Helper: {record['Helper (μL)']} μL")
-                    st.write(f"💊 Cholesterol: {record['Cholesterol (μL)']} μL")
-                    st.write(f"🔷 PEG: {record['PEG (μL)']} μL")
-                with col2:
-                    st.write(f"🌫️ Ethanol: {record['Ethanol (μL)']} μL")
-                    st.write(f"📈 N/P Ratio: {record['N/P Ratio']}")
-                    st.write(f"🔢 Ion:DNA: {record['Ion:DNA Ratio']}")
-                    st.write(f"📊 Composition - Ion: {record['Ion%']}, Helper: {record['Helper%']}, Chol: {record['Chol%']}, PEG: {record['PEG%']}")
-                st.divider()
+        # Show Bulk View details option
+        with st.expander("📊 Bulk View details"):
+            bulk_multipliers = {
+                "DNA (μg)": 1.2,
+                "Ion Lipid (μL)": 1.5,
+                "Helper (μL)": 1.5,
+                "Cholesterol (μL)": 1.5,
+                "PEG (μL)": 1.5,
+                "Ethanol (μL)": 1.5,
+                "250mM Citrate (μL)": 1.2,
+                "Water (μL)": 1.2,
+                "Nucleic Acid (μL)": 1.2,
+                "Ethanol Phase Total (μL)": 1.5,
+                "Aqueous Phase Total (μL)": 1.2,
+            }
+
+            bulk_summary = []
+            for column, multiplier in bulk_multipliers.items():
+                if column not in history_df:
+                    continue
+                numeric_series = pd.to_numeric(history_df[column], errors="coerce")
+                base_total = numeric_series.sum()
+                bulk_total = base_total * multiplier
+                bulk_summary.append({
+                    "Component": column,
+                    "Sum": base_total,
+                    "Multiplier": f"{multiplier}x",
+                    "Bulk Volume": bulk_total
+                })
+
+            if bulk_summary:
+                bulk_df = pd.DataFrame(bulk_summary)
+                bulk_df["Sum"] = bulk_df["Sum"].round(2)
+                bulk_df["Bulk Volume"] = bulk_df["Bulk Volume"].round(2)
+                st.dataframe(bulk_df, use_container_width=True)
+            else:
+                st.info("No bulk data available yet.")
         
         col_h1, col_h2 = st.columns(2)
         with col_h1:
