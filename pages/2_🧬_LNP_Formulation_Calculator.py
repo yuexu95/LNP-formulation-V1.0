@@ -328,7 +328,7 @@ with tab_pdna:
         
         # Show Bulk View details option
         with st.expander("📊 Bulk View details"):
-            hint = st.info("If you prepare the multiple LNPs with the same ratio between each components without changing any molar ratio, you can use bulk volumes include extra buffer: Lipids and Ethanol x1.5, Aqueous components x1.2")
+            hint = st.info("If you prepare the multiple LNPs with the same ratio between each components, you can use bulk volumes include extra buffer: Lipids and Ethanol x1.5, Aqueous components x1.2")
             bulk_multipliers = {
                 "Ion Lipid (μL)": 1.5,
                 "Helper (μL)": 1.5,
