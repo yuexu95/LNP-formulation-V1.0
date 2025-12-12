@@ -37,6 +37,48 @@ def calculate_np_ratio(nucleic_acid_mass_ug, ionizable_lipid_moles, amines_per_m
     
     return np_ratio, amine_moles_umol, phosphate_moles_umol
 
+def calculate_EtOH_master_mix_volume(ion_lipid_volume, helper_lipid_volume, cholesterol_volume, pegdmg2000_volume):
+    """
+    Calculates the total volume of ethanol master mix needed for LNP formulation.
+    """
+    ethanol_master_mix_volume = ion_lipid_volume + helper_lipid_volume + cholesterol_volume + pegdmg2000_volume
+    return ethanol_master_mix_volume
+
+def calculate_EtOH_phase_total_volume(ethanol_master_mix_volume, ethanol_volume):
+    """
+    Calculates the total ethanol phase volume including ethanol master mix and additional ethanol.
+    """
+    ethanol_phase_total_volume = ethanol_master_mix_volume + ethanol_volume
+    return ethanol_phase_total_volume
+
+def calculate_Aqueous_phase_total_volume(ethanol_phase_total_volume):
+    """
+    Calculates the total aqueous phase volume.
+    """
+    aqueous_phase_total_volume = ethanol_phase_total_volume * (3 / 1)  # Assuming a 3:1 aqueous to ethanol ratio 
+    return aqueous_phase_total_volume
+
+def calculate_25mM_for_DNA_citrate_volume(aqueous_phase_total_volume):
+    """
+    Calculates the volume of 25 mM citrate needed for the aqueous phase.
+    """
+    citrate_volume_25mM = aqueous_phase_total_volume * 0.1 # 10% of aqueous phase volume, stock is 250 mM citrate buffer.
+    return citrate_volume_25mM
+
+def calculate_water_volume(aqueous_phase_total_volume, nucleic_acid_volume, citrate_volume_25mM):
+    """
+    Calculates the volume of water needed for the aqueous phase.
+    """
+    water_volume = aqueous_phase_total_volume - nucleic_acid_volume - citrate_volume_25mM
+    return water_volume
+
+def calculate_Aqueous_master_mix_volume(citrate_volume_25mM, water_volume):
+    """
+    Calculates the total aqueous master mix volume.
+    """
+    aqueous_master_mix_volume = citrate_volume_25mM + water_volume
+    return aqueous_master_mix_volume
+
 def make_lnp_formulation(
     nucleic_acid_scale, nucleic_acid_stock_concentration, ionizable_lipid_to_na_ratio, 
     aqueous_to_ethanol_ratio, ionizable_lipid_mw, helper_lipid_mw, cholesterol_mw, 
@@ -91,7 +133,10 @@ def make_lnp_formulation(
         "citrate_volume": citrate_volume,
         "water_volume": water_volume,
         "aqueous_volume": aqueous_phase_volume,
-        "ionizable_lipid_moles": ionizable_lipid_moles
+        "ionizable_lipid_moles": ionizable_lipid_moles,
+        "ethanol_phase_total_volume": ethanol_phase_volume,
+        "aqueous_master_mix_volume": citrate_volume + water_volume,
+        "ethanol_master_mix_volume": ionizable_lipid_volume + helper_lipid_volume + cholesterol_volume + pegdmg2000_volume,
     }
 
     return df, volumes
@@ -211,18 +256,26 @@ with tab_pdna:
             record = {
                 "Name": pdna_name if pdna_name else "Unnamed",
                 "DNA (μg)": f"{pdna_scale:.2f}",
+                "Ion:DNA Ratio": f"{pdna_ion_dna_ratio:.1f}:1",
+                "N/P Ratio": f"{np_ratio:.3f}",
+                "Ion%": f"{pdna_ion_ratio:.1f}%",
+                "Helper%": f"{pdna_helper_ratio:.1f}%",
+                "Chol%": f"{pdna_chol_ratio:.1f}%",
+                "PEG%": f"{pdna_peg_ratio:.2f}%",
                 "Ion Lipid (μL)": f"{pdna_volumes['Ionizable Lipid']:.2f}",
                 "Helper (μL)": f"{pdna_volumes['helper_lipid_volume']:.2f}",
                 "Cholesterol (μL)": f"{pdna_volumes['cholesterol_volume']:.2f}",
                 "PEG (μL)": f"{pdna_volumes['pegdmg2000_volume']:.2f}",
                 "Ethanol (μL)": f"{pdna_volumes['ethanol']:.2f}",
-                "N/P Ratio": f"{np_ratio:.3f}",
-                "Ion:DNA Ratio": f"{pdna_ion_dna_ratio:.1f}:1",
-                "Ion%": f"{pdna_ion_ratio:.1f}%",
-                "Helper%": f"{pdna_helper_ratio:.1f}%",
-                "Chol%": f"{pdna_chol_ratio:.1f}%",
-                "PEG%": f"{pdna_peg_ratio:.2f}%"
+                "Ethanol Phase Total (μL)": f"{pdna_volumes['ethanol_phase_total_volume']:.2f}",
+                "250mM Citrate (μL)": f"{pdna_volumes['citrate_volume']:.2f}",
+                "Water (μL)": f"{pdna_volumes['water_volume']:.2f}",
+                "Nucleic Acid (μL)": f"{pdna_volumes['nucleic_acid_volume']:.2f}",
+                "Aqueous Phase Total (μL)": f"{pdna_volumes['aqueous_volume']:.2f}",
+                "Ethanol Master Mix (μL)*1.5": f"{pdna_volumes['ethanol_master_mix_volume']*1.5:.2f}",
+                "Aqueous Master Mix (μL)*1.2": f"{pdna_volumes['aqueous_master_mix_volume']*1.2:.2f}",
             }
+            
             st.session_state.pdna_history.append(record)
             st.success(f"✅ pDNA formulation '{record['Name']}' calculated!")
     
@@ -277,6 +330,8 @@ with tab_mrna:
         st.session_state.mrna_result_df = None
         st.session_state.mrna_volumes = None
         st.session_state.mrna_history = []
+        st.session_state.mrna_last_scale = None
+        st.session_state.mrna_last_amines = None
     
     # Input section
     st.subheader("📋 mRNA Formulation Parameters")
@@ -366,16 +421,24 @@ with tab_mrna:
                 "PEG%": f"{mrna_peg_ratio:.2f}%"
             }
             st.session_state.mrna_history.append(record)
+            st.session_state.mrna_last_scale = mrna_scale
+            st.session_state.mrna_last_amines = mrna_amines
             st.success(f"✅ mRNA formulation '{record['Name']}' calculated!")
     
     # Results display
-    if st.session_state.mrna_result_df is not None:
-        st.markdown("---")
-        st.subheader("📊 mRNA Formulation Results")
-        
+    if (
+        st.session_state.mrna_result_df is not None
+        and st.session_state.mrna_volumes is not None
+    ):
+        volumes = st.session_state.mrna_volumes
+        last_scale = st.session_state.mrna_last_scale or mrna_scale
+        last_amines = st.session_state.mrna_last_amines or mrna_amines
         np_ratio, n_moles, p_moles = calculate_np_ratio(
-            mrna_scale, st.session_state.mrna_volumes["ionizable_lipid_moles"], mrna_amines
+            last_scale, volumes["ionizable_lipid_moles"], last_amines
         )
+        
+        st.subheader("📊 mRNA Formulation Results")
+        st.dataframe(st.session_state.mrna_result_df, use_container_width=True)
         
         metric_col1, metric_col2, metric_col3 = st.columns(3)
         with metric_col1:
