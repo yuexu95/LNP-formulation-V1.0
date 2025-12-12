@@ -162,6 +162,22 @@ def prepare_bulk_lnp_volumes(volumes, times):
     bulk_df = pd.DataFrame(bulk_volumes)
     return bulk_df
 
+def append_bulk_summary_rows(df, volumes, times, ethanol_multiplier=1.5, aqueous_multiplier=1.2):
+    """
+    Appends bulk master mix summary rows to a formulation dataframe.
+    """
+    ethanol_total = volumes["ethanol_master_mix_volume"] * times * ethanol_multiplier
+    aqueous_total = volumes["aqueous_master_mix_volume"] * times * aqueous_multiplier
+    bulk_rows = pd.DataFrame({
+        'Component': [
+            f"Ethanol Master Mix x{times} ({ethanol_multiplier}x)",
+            f"Aqueous Master Mix x{times} ({aqueous_multiplier}x)"
+        ],
+        'Volume (μL)': [ethanol_total, aqueous_total]
+    })
+    df_with_bulk = pd.concat([df, bulk_rows], ignore_index=True)
+    return df_with_bulk, ethanol_total, aqueous_total
+
 # ============================================================================
 # PAGE TABS
 # ============================================================================
@@ -190,7 +206,7 @@ with tab_pdna:
     with col2:
         pdna_stock_conc = st.number_input("DNA Stock (μg/μL)", min_value=0.0, step=0.1, value=1.0, key="pdna_stock", help="Concentration of the DNA stock solution")
     with col3:
-        pdna_ion_dna_ratio = st.number_input("Ionizable Lipid to DNA Ratio", min_value=0.0, step=1.0, value=10.0, key="pdna_ratio", help="10:1 is equivalent to N/P ~4-5 for pDNA")
+        pdna_ion_dna_ratio = st.number_input("Ionizable Lipid to DNA Ratio", min_value=0.0, step=1.0, value=10, key="pdna_ratio", help="10:1 is equivalent to N/P ~4-5 for pDNA")
     with col4:
         pdna_aq_eth_ratio = st.number_input("Aqueous to Ethanol Ratio", min_value=0.0, step=0.1, value=3.0, key="pdna_aq_eth", help="Common ratio is 3:1")
 
@@ -244,7 +260,10 @@ with tab_pdna:
                 pdna_ion_ratio, pdna_helper_ratio, pdna_chol_ratio, pdna_peg_ratio,
                 na_type="pDNA"
             )
-            st.session_state.pdna_result_df = pdna_result_df
+            pdna_display_df, pdna_bulk_ethanol, pdna_bulk_aqueous = append_bulk_summary_rows(
+                pdna_result_df, pdna_volumes, pdna_bulk_times
+            )
+            st.session_state.pdna_result_df = pdna_display_df
             st.session_state.pdna_volumes = pdna_volumes
             
             # Calculate N/P ratio
@@ -272,10 +291,11 @@ with tab_pdna:
                 "Water (μL)": f"{pdna_volumes['water_volume']:.2f}",
                 "Nucleic Acid (μL)": f"{pdna_volumes['nucleic_acid_volume']:.2f}",
                 "Aqueous Phase Total (μL)": f"{pdna_volumes['aqueous_volume']:.2f}",
-                "Ethanol Master Mix (μL)*1.5": f"{pdna_volumes['ethanol_master_mix_volume']*1.5:.2f}",
-                "Aqueous Master Mix (μL)*1.2": f"{pdna_volumes['aqueous_master_mix_volume']*1.2:.2f}",
+                "Bulk Count": f"{pdna_bulk_times}x",
+                "Ethanol Master Mix (μL)*1.5": f"{pdna_bulk_ethanol:.2f}",
+                "Aqueous Master Mix (μL)*1.2": f"{pdna_bulk_aqueous:.2f}"
             }
-            
+         
             st.session_state.pdna_history.append(record)
             st.success(f"✅ pDNA formulation '{record['Name']}' calculated!")
     
@@ -396,7 +416,10 @@ with tab_mrna:
                 mrna_ion_ratio, mrna_helper_ratio, mrna_chol_ratio, mrna_peg_ratio,
                 na_type="mRNA"
             )
-            st.session_state.mrna_result_df = mrna_result_df
+            mrna_display_df, mrna_bulk_ethanol, mrna_bulk_aqueous = append_bulk_summary_rows(
+                mrna_result_df, mrna_volumes, mrna_bulk_times
+            )
+            st.session_state.mrna_result_df = mrna_display_df
             st.session_state.mrna_volumes = mrna_volumes
             
             # Calculate N/P ratio
@@ -418,7 +441,10 @@ with tab_mrna:
                 "Ion%": f"{mrna_ion_ratio:.1f}%",
                 "Helper%": f"{mrna_helper_ratio:.1f}%",
                 "Chol%": f"{mrna_chol_ratio:.1f}%",
-                "PEG%": f"{mrna_peg_ratio:.2f}%"
+                "PEG%": f"{mrna_peg_ratio:.2f}%",
+                "Bulk Count": f"{mrna_bulk_times}x",
+                "Ethanol Master Mix (μL)*1.5": f"{mrna_bulk_ethanol:.2f}",
+                "Aqueous Master Mix (μL)*1.2": f"{mrna_bulk_aqueous:.2f}"
             }
             st.session_state.mrna_history.append(record)
             st.session_state.mrna_last_scale = mrna_scale
