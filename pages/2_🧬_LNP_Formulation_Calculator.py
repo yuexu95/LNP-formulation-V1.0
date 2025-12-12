@@ -168,12 +168,16 @@ def prepare_bulk_lnp_volumes(volumes, times):
     bulk_df = pd.DataFrame(bulk_volumes)
     return bulk_df
 
-def append_bulk_summary_rows(df, volumes, times, ethanol_multiplier=1.5, aqueous_multiplier=1.2):
+def append_bulk_summary_rows(
+    df, volumes, times, ethanol_multiplier=1.5, aqueous_multiplier=1.2, bulk_multiplier=1.2
+):
     """
     Appends bulk master mix summary rows to a formulation dataframe.
     """
     ethanol_total = volumes["ethanol_master_mix_volume"] * times * ethanol_multiplier
     aqueous_total = volumes["aqueous_master_mix_volume"] * times * aqueous_multiplier
+    column_total = df['Volume (μL)'].sum()
+    bulk_total = column_total * times * bulk_multiplier
     bulk_rows = pd.DataFrame({
         'Component': [
             f"Ethanol Master Mix x{times} ({ethanol_multiplier}x)",
@@ -181,8 +185,12 @@ def append_bulk_summary_rows(df, volumes, times, ethanol_multiplier=1.5, aqueous
         ],
         'Volume (μL)': [ethanol_total, aqueous_total]
     })
-    df_with_bulk = pd.concat([df, bulk_rows], ignore_index=True)
-    return df_with_bulk, ethanol_total, aqueous_total
+    total_row = pd.DataFrame({
+        'Component': [f"Bulk Total x{times} ({bulk_multiplier}x)"],
+        'Volume (μL)': [bulk_total]
+    })
+    df_with_bulk = pd.concat([df, bulk_rows, total_row], ignore_index=True)
+    return df_with_bulk, ethanol_total, aqueous_total, bulk_total
 
 # ============================================================================
 # PAGE TABS
@@ -266,7 +274,7 @@ with tab_pdna:
                 pdna_ion_ratio, pdna_helper_ratio, pdna_chol_ratio, pdna_peg_ratio,
                 na_type="pDNA"
             )
-            pdna_display_df, pdna_bulk_ethanol, pdna_bulk_aqueous = append_bulk_summary_rows(
+            pdna_display_df, pdna_bulk_ethanol, pdna_bulk_aqueous, pdna_bulk_total = append_bulk_summary_rows(
                 pdna_result_df, pdna_volumes, pdna_bulk_times
             )
             st.session_state.pdna_result_df = pdna_display_df
@@ -299,7 +307,8 @@ with tab_pdna:
                 "Aqueous Phase Total (μL)": f"{pdna_volumes['aqueous_volume']:.2f}",
                 "Bulk Count": f"{pdna_bulk_times}x",
                 "Ethanol Master Mix (μL)*1.5": f"{pdna_bulk_ethanol:.2f}",
-                "Aqueous Master Mix (μL)*1.2": f"{pdna_bulk_aqueous:.2f}"
+                "Aqueous Master Mix (μL)*1.2": f"{pdna_bulk_aqueous:.2f}",
+                "Bulk Total (μL)*1.2": f"{pdna_bulk_total:.2f}"
             }
          
             st.session_state.pdna_history.append(record)
@@ -422,7 +431,7 @@ with tab_mrna:
                 mrna_ion_ratio, mrna_helper_ratio, mrna_chol_ratio, mrna_peg_ratio,
                 na_type="mRNA"
             )
-            mrna_display_df, mrna_bulk_ethanol, mrna_bulk_aqueous = append_bulk_summary_rows(
+            mrna_display_df, mrna_bulk_ethanol, mrna_bulk_aqueous, mrna_bulk_total = append_bulk_summary_rows(
                 mrna_result_df, mrna_volumes, mrna_bulk_times
             )
             st.session_state.mrna_result_df = mrna_display_df
@@ -450,7 +459,8 @@ with tab_mrna:
                 "PEG%": f"{mrna_peg_ratio:.2f}%",
                 "Bulk Count": f"{mrna_bulk_times}x",
                 "Ethanol Master Mix (μL)*1.5": f"{mrna_bulk_ethanol:.2f}",
-                "Aqueous Master Mix (μL)*1.2": f"{mrna_bulk_aqueous:.2f}"
+                "Aqueous Master Mix (μL)*1.2": f"{mrna_bulk_aqueous:.2f}",
+                "Bulk Total (μL)*1.2": f"{mrna_bulk_total:.2f}"
             }
             st.session_state.mrna_history.append(record)
             st.session_state.mrna_last_scale = mrna_scale
