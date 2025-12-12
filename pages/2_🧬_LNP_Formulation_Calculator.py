@@ -221,7 +221,7 @@ with tab_pdna:
     with col2:
         pdna_stock_conc = st.number_input("DNA Stock (μg/μL)", min_value=0.0, step=0.1, value=1.0, key="pdna_stock", help="Concentration of the DNA stock solution")
     with col3:
-        pdna_ion_dna_ratio = st.number_input("Ionizable Lipid to DNA Ratio", min_value=0.0, step=1.0, value=10.0, key="pdna_ratio", help="10:1 is equivalent to N/P ~4-5 for pDNA")
+        pdna_ion_dna_ratio = st.number_input("Ionizable Lipid to DNA Mass Ratio", min_value=0.0, step=1.0, value=10.0, key="pdna_ratio", help="10:1 is equivalent to N/P ~4-5 for pDNA")
     with col4:
         pdna_aq_eth_ratio = st.number_input("Aqueous to Ethanol Ratio", min_value=0.0, step=0.1, value=3.0, key="pdna_aq_eth", help="Common ratio is 3:1")
 
