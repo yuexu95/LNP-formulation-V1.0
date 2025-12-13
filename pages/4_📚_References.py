@@ -27,6 +27,11 @@ st.info("""
     Patel MN, Tiwari S, Wang Y, O'Neill S, Wu J, Omo-Lamai S, Espy C, Chase LS, Majumder A, Hoffman E, Shah A, Sárközy A, Katzen J, Pardi N, and Brenner JS. *Nature Biotechnology* (2025).  
     [DOI: 10.1038/s41587-025-02556-5](https://doi.org/10.1038/s41587-025-02556-5)  
     This groundbreaking study demonstrates a novel approach to enhancing the safety profile of lipid nanoparticle-mediated DNA delivery through the incorporation of endogenous anti-inflammatory lipids, addressing a critical challenge in non-viral gene therapy.
+        
+3. **Preparation of selective organ-targeting (SORT) lipid nanoparticles (LNPs) using multiple technical methods for tissue-specific mRNA delivery.**
+    Wang, X., Liu, S., Sun, Y., Yu, X., Lee, S.M., Cheng, Q., Wei, T., Gong, J., Robinson, J., Zhang, D. and Lian, X., 
+    *Nature protocols*, 18(1), pp.265-291, 2023.
+    [https://doi.org/10.1038/s41596-022-00755-x](https://doi.org/10.1038/s41596-022-00755-x)
 """)
 
 # 2025 References
