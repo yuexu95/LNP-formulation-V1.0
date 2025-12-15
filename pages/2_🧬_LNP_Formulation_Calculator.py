@@ -222,6 +222,7 @@ with tab_pdna:
     pdna_ratio_mode = st.radio(
         "Select Input Method",
         ["Mass Ratio", "N/P Ratio"],
+        index=1,
         horizontal=True,
         key="pdna_ratio_mode",
         help="Choose whether to input Mass Ratio or N/P Ratio"
@@ -417,6 +418,7 @@ with tab_mrna:
     mrna_ratio_mode = st.radio(
         "Select Input Method",
         ["Mass Ratio", "N/P Ratio"],
+        index=1,
         horizontal=True,
         key="mrna_ratio_mode",
         help="Choose whether to input Mass Ratio or N/P Ratio"
