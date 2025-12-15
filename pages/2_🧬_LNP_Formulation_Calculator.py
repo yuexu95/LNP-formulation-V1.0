@@ -233,10 +233,11 @@ with tab_pdna:
     with col2:
         pdna_stock_conc = st.number_input("DNA Stock (μg/μL)", min_value=0.0, step=0.1, value=1.0, key="pdna_stock", help="Concentration of the DNA stock solution")
     with col3:
-        if pdna_ratio_mode == "Mass Ratio":
-            pdna_ion_dna_ratio = st.number_input("Ionizable Lipid to DNA Mass Ratio", min_value=0.0, step=1.0, value=17.0, key="pdna_ratio", help="17:1 is equivalent to N/P ~8 for pDNA")
-        else:
+        if pdna_ratio_mode == "N/P Ratio":
             pdna_np_ratio_input = st.number_input("N/P Ratio", min_value=0.0, step=0.5, value=8.0, key="pdna_np_input", help="N/P ratio of 8 is equivalent to Mass Ratio ~17:1 for SM-102")
+        else:
+            pdna_ion_dna_ratio = st.number_input("Ionizable Lipid to DNA Mass Ratio", min_value=0.0, step=1.0, value=17.0, key="pdna_ratio", help="17:1 is equivalent to N/P ~8 for pDNA")
+            
     with col4:
         pdna_aq_eth_ratio = st.number_input("Aqueous to Ethanol Ratio", min_value=0.0, step=0.1, value=3.0, key="pdna_aq_eth", help="Common ratio is 3:1")
 
@@ -310,6 +311,7 @@ with tab_pdna:
             # Save to history
             record = {
                 "Name": pdna_name if pdna_name else "Unnamed",
+                "Ion Lipid (MW)": f"{pdna_ion_mw:.2f}",
                 "DNA (μg)": f"{pdna_scale:.2f}",
                 "Ion:DNA Ratio": format_ratio_label(pdna_ion_dna_ratio),
                 "N/P Ratio": f"{np_ratio:.3f}",
