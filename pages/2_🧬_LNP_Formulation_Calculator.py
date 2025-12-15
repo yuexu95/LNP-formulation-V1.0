@@ -220,11 +220,11 @@ with tab_pdna:
     
     col1, col2, col3, col4 = st.columns(4)
     with col1:
-        pdna_scale = st.number_input("DNA Scale (μg)", min_value=0.0, step=1.0, value=3.0, key="pdna_scale", help="Minimum DNA amount for each LNP formation is typically around 3 μg")
+        pdna_scale = st.number_input("DNA Scale (μg)", min_value=0.0, step=1.0, value=6.0, key="pdna_scale", help="Minimum DNA amount for each LNP formation is typically around 3 μg")
     with col2:
         pdna_stock_conc = st.number_input("DNA Stock (μg/μL)", min_value=0.0, step=0.1, value=1.0, key="pdna_stock", help="Concentration of the DNA stock solution")
     with col3:
-        pdna_ion_dna_ratio = st.number_input("Ionizable Lipid to DNA Mass Ratio", min_value=0.0, step=1.0, value=10.0, key="pdna_ratio", help="10:1 is equivalent to N/P ~4-5 for pDNA")
+        pdna_ion_dna_ratio = st.number_input("Ionizable Lipid to DNA Mass Ratio", min_value=0.0, step=1.0, value=17.0, key="pdna_ratio", help="17:1 is equivalent to N/P ~8 for pDNA")
     with col4:
         pdna_aq_eth_ratio = st.number_input("Aqueous to Ethanol Ratio", min_value=0.0, step=0.1, value=3.0, key="pdna_aq_eth", help="Common ratio is 3:1")
 
