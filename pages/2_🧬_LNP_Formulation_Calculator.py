@@ -230,14 +230,14 @@ with tab_pdna:
     
     col1, col2, col3, col4 = st.columns(4)
     with col1:
-        pdna_scale = st.number_input("DNA Scale (μg)", min_value=0.0, step=1.0, value=6.0, key="pdna_scale", help="Minimum DNA amount for each LNP formation is typically around 3 μg")
+        pdna_scale = st.number_input("DNA Scale (μg)", min_value=0.0, step=1.0, value=5.0, key="pdna_scale", help="Minimum DNA amount for each LNP formation is typically around 3 μg")
     with col2:
         pdna_stock_conc = st.number_input("DNA Stock (μg/μL)", min_value=0.0, step=0.1, value=1.0, key="pdna_stock", help="Concentration of the DNA stock solution")
     with col3:
         if pdna_ratio_mode == "N/P Ratio":
             pdna_np_ratio_input = st.number_input("N/P Ratio", min_value=0.0, step=0.5, value=8.0, key="pdna_np_input", help="N/P ratio of 8 is equivalent to Mass Ratio ~17:1 for SM-102")
         else:
-            pdna_ion_dna_ratio = st.number_input("Ionizable Lipid to DNA Mass Ratio", min_value=0.0, step=1.0, value=17.0, key="pdna_ratio", help="17:1 is equivalent to N/P ~8 for pDNA")
+            pdna_ion_dna_ratio = st.number_input("Ionizable Lipid to DNA Mass Ratio", min_value=0.0, step=1.0, value=17.0, key="pdna_ratio")
             
     with col4:
         pdna_aq_eth_ratio = st.number_input("Aqueous to Ethanol Ratio", min_value=0.0, step=0.1, value=3.0, key="pdna_aq_eth", help="Common ratio is 3:1")
@@ -254,7 +254,7 @@ with tab_pdna:
 
     col9, col10, col11, col12 = st.columns(4)
     with col9:
-        pdna_ion_conc = st.number_input("Ionizable Lipid Conc (μg/μL)", min_value=0.0, step=1.0, value=40.0, key="pdna_ion_conc", help="Suggested ionizable lipid concentration is 40 μg/μL")
+        pdna_ion_conc = st.number_input("Ionizable Lipid Conc (μg/μL)", min_value=0.0, step=1.0, value=10.0, key="pdna_ion_conc", help="Suggested ionizable lipid concentration is 40 μg/μL")
     with col10:
         pdna_helper_conc = st.number_input("Helper Lipid Conc (μg/μL)", min_value=0.0, step=1.0, value=10.0, key="pdna_helper_conc", help="Suggested helper lipid concentration is 10 μg/μL")
     with col11:
