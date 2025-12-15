@@ -218,13 +218,25 @@ with tab_pdna:
     # Input section
     st.subheader("📋 pDNA Formulation Parameters")
     
+    # Ratio input method selection
+    pdna_ratio_mode = st.radio(
+        "Select Input Method",
+        ["Mass Ratio", "N/P Ratio"],
+        horizontal=True,
+        key="pdna_ratio_mode",
+        help="Choose whether to input Mass Ratio or N/P Ratio"
+    )
+    
     col1, col2, col3, col4 = st.columns(4)
     with col1:
         pdna_scale = st.number_input("DNA Scale (μg)", min_value=0.0, step=1.0, value=6.0, key="pdna_scale", help="Minimum DNA amount for each LNP formation is typically around 3 μg")
     with col2:
         pdna_stock_conc = st.number_input("DNA Stock (μg/μL)", min_value=0.0, step=0.1, value=1.0, key="pdna_stock", help="Concentration of the DNA stock solution")
     with col3:
-        pdna_ion_dna_ratio = st.number_input("Ionizable Lipid to DNA Mass Ratio", min_value=0.0, step=1.0, value=17.0, key="pdna_ratio", help="17:1 is equivalent to N/P ~8 for pDNA")
+        if pdna_ratio_mode == "Mass Ratio":
+            pdna_ion_dna_ratio = st.number_input("Ionizable Lipid to DNA Mass Ratio", min_value=0.0, step=1.0, value=17.0, key="pdna_ratio", help="17:1 is equivalent to N/P ~8 for pDNA")
+        else:
+            pdna_np_ratio_input = st.number_input("N/P Ratio", min_value=0.0, step=0.5, value=8.0, key="pdna_np_input", help="N/P ratio of 8 is equivalent to Mass Ratio ~17:1 for SM-102")
     with col4:
         pdna_aq_eth_ratio = st.number_input("Aqueous to Ethanol Ratio", min_value=0.0, step=0.1, value=3.0, key="pdna_aq_eth", help="Common ratio is 3:1")
 
@@ -263,6 +275,12 @@ with tab_pdna:
         pdna_bulk_times = st.number_input("Bulk Preparation Times", min_value=1, step=1, value=1, key="pdna_bulk", help="Prepare extra volume for bulk LNP formulation")
     with col18:
         pdna_amines = st.number_input("Amines per Ionizable Lipid", min_value=0.0, step=1.0, value=1.0, key="pdna_amines", help="Number of ionizable tertiary amine groups per lipid molecule (default=1.0)")
+    
+    # Calculate Mass Ratio from N/P if needed
+    if pdna_ratio_mode == "N/P Ratio":
+        # Mass Ratio = (N/P × MW) / (Amines × 330)
+        pdna_ion_dna_ratio = (pdna_np_ratio_input * pdna_ion_mw) / (pdna_amines * 330)
+        st.info(f"📊 Calculated Mass Ratio: {pdna_ion_dna_ratio:.2f}:1 (from N/P ratio {pdna_np_ratio_input:.2f})")
     
     pdna_name = st.text_input("Formulation Name", value="", placeholder="Enter name for this pDNA formulation", key="pdna_name")
     
@@ -393,13 +411,25 @@ with tab_mrna:
     # Input section
     st.subheader("📋 mRNA Formulation Parameters")
     
+    # Ratio input method selection
+    mrna_ratio_mode = st.radio(
+        "Select Input Method",
+        ["Mass Ratio", "N/P Ratio"],
+        horizontal=True,
+        key="mrna_ratio_mode",
+        help="Choose whether to input Mass Ratio or N/P Ratio"
+    )
+    
     col1, col2, col3, col4 = st.columns(4)
     with col1:
         mrna_scale = st.number_input("RNA Scale (μg)", min_value=0.0, step=1.0, value=3.0, key="mrna_scale")
     with col2:
         mrna_stock_conc = st.number_input("RNA Stock (μg/μL)", min_value=0.0, step=0.1, value=1.0, key="mrna_stock")
     with col3:
-        mrna_ion_rna_ratio = st.number_input("Ionizable Lipid to RNA Ratio", min_value=0.0, step=0.1, value=10.0, key="mrna_ratio")
+        if mrna_ratio_mode == "Mass Ratio":
+            mrna_ion_rna_ratio = st.number_input("Ionizable Lipid to RNA Mass Ratio", min_value=0.0, step=0.1, value=10.0, key="mrna_ratio")
+        else:
+            mrna_np_ratio_input = st.number_input("N/P Ratio", min_value=0.0, step=0.5, value=6.0, key="mrna_np_input", help="N/P ratio of 6 is equivalent to Mass Ratio ~10:1 for SM-102")
     with col4:
         mrna_aq_eth_ratio = st.number_input("Aqueous to Ethanol Ratio", min_value=0.0, step=0.1, value=3.0, key="mrna_aq_eth")
 
@@ -438,6 +468,12 @@ with tab_mrna:
         mrna_bulk_times = st.number_input("Bulk Preparation Times", min_value=1, step=1, value=1, key="mrna_bulk")
     with col18:
         mrna_amines = st.number_input("Amines per Ionizable Lipid", min_value=0.0, step=0.1, value=1.0, key="mrna_amines")
+    
+    # Calculate Mass Ratio from N/P if needed
+    if mrna_ratio_mode == "N/P Ratio":
+        # Mass Ratio = (N/P × MW) / (Amines × 330)
+        mrna_ion_rna_ratio = (mrna_np_ratio_input * mrna_ion_mw) / (mrna_amines * 330)
+        st.info(f"📊 Calculated Mass Ratio: {mrna_ion_rna_ratio:.2f}:1 (from N/P ratio {mrna_np_ratio_input:.2f})")
     
     mrna_name = st.text_input("Formulation Name", value="", placeholder="Enter name for this mRNA formulation", key="mrna_name")
     
