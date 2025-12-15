@@ -262,7 +262,7 @@ with tab_pdna:
     with col17:
         pdna_bulk_times = st.number_input("Bulk Preparation Times", min_value=1, step=1, value=1, key="pdna_bulk", help="Prepare extra volume for bulk LNP formulation")
     with col18:
-        pdna_amines = st.number_input("Amines per Ionizable Lipid", min_value=0.0, step=0.1, value=1.0, key="pdna_amines", help="Number of ionizable tertiary amine groups per lipid molecule (default=1.0)")
+        pdna_amines = st.number_input("Amines per Ionizable Lipid", min_value=0.0, step=1.0, value=1.0, key="pdna_amines", help="Number of ionizable tertiary amine groups per lipid molecule (default=1.0)")
     
     pdna_name = st.text_input("Formulation Name", value="", placeholder="Enter name for this pDNA formulation", key="pdna_name")
     
