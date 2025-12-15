@@ -449,13 +449,13 @@ with tab_mrna:
 
     col9, col10, col11, col12 = st.columns(4)
     with col9:
-        mrna_ion_conc = st.number_input("Ionizable Lipid Conc (μg/μL)", min_value=0.0, step=1, value=10.0, key="mrna_ion_conc")
+        mrna_ion_conc = st.number_input("Ionizable Lipid Conc (μg/μL)", min_value=0.0, step=1.0, value=10.0, key="mrna_ion_conc")
     with col10:
-        mrna_helper_conc = st.number_input("Helper Lipid Conc (μg/μL)", min_value=0.0, step=1, value=10.0, key="mrna_helper_conc")
+        mrna_helper_conc = st.number_input("Helper Lipid Conc (μg/μL)", min_value=0.0, step=1.0, value=10.0, key="mrna_helper_conc")
     with col11:
-        mrna_chol_conc = st.number_input("Cholesterol Conc (μg/μL)", min_value=0.0, step=1, value=10.0, key="mrna_chol_conc")
+        mrna_chol_conc = st.number_input("Cholesterol Conc (μg/μL)", min_value=0.0, step=1.0, value=10.0, key="mrna_chol_conc")
     with col12:
-        mrna_peg_conc = st.number_input("PEG-DMG2000 Conc (μg/μL)", min_value=0.0, step=1, value=10.0, key="mrna_peg_conc")
+        mrna_peg_conc = st.number_input("PEG-DMG2000 Conc (μg/μL)", min_value=0.0, step=1.0, value=10.0, key="mrna_peg_conc")
     
     col13, col14, col15, col16 = st.columns(4)
     with col13:
