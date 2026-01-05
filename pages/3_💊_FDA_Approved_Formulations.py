@@ -180,7 +180,7 @@ helper_lipid_options = {
 
 cholesterol_options = {
     "Cholesterol": {"name": "Cholesterol", "mw": 386.654},
-    "Cholesterol hemisuccinate": {"name": "Cholesterol hemisuccinate", "mw": 486.726},
+    "Cho-Arg": {"name": "Cho-Arg (trifluoroacetate salt)", "mw": 884.1},
     "β-Sitosterol": {"name": "β-Sitosterol (Plant sterol)", "mw": 414.71}
 }
 
