@@ -3,7 +3,7 @@ import pandas as pd
 
 st.set_page_config(layout="wide")
 
-st.title("🧬 LNP Formulation Calculator with 5th Component")
+st.title("⚗️ LNP Formulation Calculator with 5th Component")
 
 # ============================================================================
 # SHARED FUNCTIONS
