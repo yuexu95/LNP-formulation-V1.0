@@ -626,16 +626,8 @@ with tab3:
             if "info" in preset_data:
                 st.caption(f"📝 {preset_data['info']}")
     
-    # Auto-apply preset values when selected (no button needed)
-    if preset_select != "Custom":
-        preset_data = preset_compounds[preset_select]
-        st.session_state.current_preset_mw = preset_data["mw"]
-        st.session_state.current_preset_conc = preset_data["conc"]
-        st.session_state.current_preset_solvent = preset_data["solvent"]
-    else:
-        st.session_state.current_preset_mw = 500.0
-        st.session_state.current_preset_conc = 10.0
-        st.session_state.current_preset_solvent = "Water"
+    # Auto-apply preset values when selected
+    preset_data = preset_compounds[preset_select]
     
     # ========== Step 1: DNA-Compound Complex Formation ==========
     st.subheader("📋 Step 1: DNA-Compound Complex Formation")
@@ -684,28 +676,26 @@ with tab3:
             key="compound_name"
         )
     with col_p6:
-        default_mw = st.session_state.get("current_preset_mw", 500.0)
         compound_mw = st.number_input(
             "Compound Molecular Weight (Da)",
             min_value=50.0,
             step=50.0,
-            value=default_mw,
+            value=preset_data["mw"],
             key="compound_mw",
             help="Molecular weight of your compound in Daltons (Da)"
         )
     with col_p7:
-        default_conc = st.session_state.get("current_preset_conc", 10.0)
         compound_stock_conc = st.number_input(
             "Compound Stock (mg/ml)",
             min_value=0.1,
             step=0.5,
-            value=default_conc,
+            value=preset_data["conc"],
             key="compound_stock_conc",
             help="Stock concentration of your compound (mg/ml = μg/μL)"
         )
     with col_p8:
-        default_solvent = st.session_state.get("current_preset_solvent", "Water")
         solvent_options = ["Water", "PBS", "Ethanol", "DMSO", "Other"]
+        default_solvent = preset_data["solvent"]
         default_index = solvent_options.index(default_solvent) if default_solvent in solvent_options else 0
         compound_solvent = st.selectbox(
             "Compound Solvent",
