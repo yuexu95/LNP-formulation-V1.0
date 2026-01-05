@@ -332,11 +332,13 @@ with st.expander("🔧 Advanced Options"):
         )
     
     with col6:
+        # Set default cholesterol concentration based on type
+        chol_default_conc = 20.0 if selected_chol == "Cho-Arg" else 10.0
         chol_conc = st.number_input(
             "Cholesterol Conc (μg/μL)", 
             min_value=1.0, 
             step=1.0, 
-            value=10.0, 
+            value=chol_default_conc, 
             key="fda_chol_conc"
         )
     
